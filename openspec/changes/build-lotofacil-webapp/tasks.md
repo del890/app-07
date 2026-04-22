@@ -1,32 +1,32 @@
 ## 1. Repo scaffolding & tooling
 
-- [ ] 1.1 Create top-level `client/` and `service/` directories (do not touch `data.json` or `openspec/`).
-- [ ] 1.2 Add `.gitignore` entries for `client/node_modules/`, `client/.nuxt/`, `client/.output/`, `service/.venv/`, `service/__pycache__/`, `.env`, and log/calibration artifact dirs.
-- [ ] 1.3 Add a top-level `README.md` pointing to `client/` and `service/` run instructions and to `openspec/` for specs.
-- [ ] 1.4 Add a top-level `.env.example` listing `ANTHROPIC_API_KEY` and any other required env vars; never commit real values.
+- [x] 1.1 Create top-level `client/` and `service/` directories (do not touch `data.json` or `openspec/`).
+- [x] 1.2 Add `.gitignore` entries for `client/node_modules/`, `client/.nuxt/`, `client/.output/`, `service/.venv/`, `service/__pycache__/`, `.env`, and log/calibration artifact dirs.
+- [x] 1.3 Add a top-level `README.md` pointing to `client/` and `service/` run instructions and to `openspec/` for specs.
+- [x] 1.4 Add a top-level `.env.example` listing `ANTHROPIC_API_KEY` and any other required env vars; never commit real values.
 
 ## 2. Service: project bootstrap (Python, agents, LLM)
 
-- [ ] 2.1 `cd service && uv init` and create `pyproject.toml` with Python ≥ 3.11.
-- [ ] 2.2 Add runtime deps: `anthropic`, `fastapi`, `uvicorn`, `pydantic>=2`, `pydantic-settings`, `python-dotenv`, `numpy`, `pandas`, `scikit-learn`, `scipy`.
-- [ ] 2.3 Add dev deps: `ruff`, `mypy`, `pytest`, `pytest-asyncio`, `httpx` (for test client).
-- [ ] 2.4 Configure Ruff (lint + format), mypy strict (`disallow_untyped_defs`), and `pytest` with `tests/` discovery.
-- [ ] 2.5 Create src layout: `service/src/service/{__init__.py,main.py,config.py,llm/,agents/,tools/,prompts/,models/}` and `service/tests/`.
-- [ ] 2.6 Implement `config.py` with `pydantic-settings` loading `ANTHROPIC_API_KEY`, `ENV`, `LOG_LEVEL`, and the rate-limit / spend-cap knobs.
-- [ ] 2.7 Implement `llm/client.py` — Anthropic client factory with `cache_control` helpers and retry/backoff.
-- [ ] 2.8 Fail-fast startup: if `ANTHROPIC_API_KEY` is missing, refuse to start with a clear error (per `prediction-service-api` spec).
-- [ ] 2.9 Add structured JSON logging (one line per request) with request id, route, status, duration, token usage.
+- [x] 2.1 `cd service && uv init` and create `pyproject.toml` with Python ≥ 3.11.
+- [x] 2.2 Add runtime deps: `anthropic`, `fastapi`, `uvicorn`, `pydantic>=2`, `pydantic-settings`, `python-dotenv`, `numpy`, `pandas`, `scikit-learn`, `scipy`.
+- [x] 2.3 Add dev deps: `ruff`, `mypy`, `pytest`, `pytest-asyncio`, `httpx` (for test client).
+- [x] 2.4 Configure Ruff (lint + format), mypy strict (`disallow_untyped_defs`), and `pytest` with `tests/` discovery.
+- [x] 2.5 Create src layout: `service/src/service/{__init__.py,main.py,config.py,llm/,agents/,tools/,prompts/,models/}` and `service/tests/`.
+- [x] 2.6 Implement `config.py` with `pydantic-settings` loading `ANTHROPIC_API_KEY`, `ENV`, `LOG_LEVEL`, and the rate-limit / spend-cap knobs.
+- [x] 2.7 Implement `llm/client.py` — Anthropic client factory with `cache_control` helpers and retry/backoff.
+- [x] 2.8 Fail-fast startup: if `ANTHROPIC_API_KEY` is missing, refuse to start with a clear error (per `prediction-service-api` spec).
+- [x] 2.9 Add structured JSON logging (one line per request) with request id, route, status, duration, token usage.
 
 ## 3. Capability: draw-data-ingestion
 
-- [ ] 3.1 Define `DrawRecord` Pydantic model (index, iso_date, numbers_sorted: tuple[int, ...], original_position).
-- [ ] 3.2 Implement `DataLoader.load(path: Path) -> DrawHistory` that reads `data.json`, validates every record (15 unique numbers in 1–25, `DD-MM-YYYY` date), converts dates to ISO-8601 once.
-- [ ] 3.3 Implement `DrawHistory` with chronological order, fast lookups by index, and a memoized content hash (SHA-256 of `data.json` bytes).
-- [ ] 3.4 Ensure ingestion is idempotent within a process (single read per lifetime).
-- [ ] 3.5 Implement `Provenance` model exposing count, earliest/latest ISO date, source path, content hash.
-- [ ] 3.6 Add ingestion to service startup; fail fast if `data.json` is missing or invalid (name the path in the error).
-- [ ] 3.7 Unit tests: valid load, missing file, invalid date, duplicate numbers, out-of-range number, wrong count.
-- [ ] 3.8 Golden test: tiny synthetic `data.json` produces expected hash + record count + first/last dates.
+- [x] 3.1 Define `DrawRecord` Pydantic model (index, iso_date, numbers_sorted: tuple[int, ...], original_position).
+- [x] 3.2 Implement `DataLoader.load(path: Path) -> DrawHistory` that reads `data.json`, validates every record (15 unique numbers in 1–25, `DD-MM-YYYY` date), converts dates to ISO-8601 once.
+- [x] 3.3 Implement `DrawHistory` with chronological order, fast lookups by index, and a memoized content hash (SHA-256 of `data.json` bytes).
+- [x] 3.4 Ensure ingestion is idempotent within a process (single read per lifetime).
+- [x] 3.5 Implement `Provenance` model exposing count, earliest/latest ISO date, source path, content hash.
+- [x] 3.6 Add ingestion to service startup; fail fast if `data.json` is missing or invalid (name the path in the error).
+- [x] 3.7 Unit tests: valid load, missing file, invalid date, duplicate numbers, out-of-range number, wrong count.
+- [x] 3.8 Golden test: tiny synthetic `data.json` produces expected hash + record count + first/last dates.
 
 ## 4. Capability: statistical-analysis
 

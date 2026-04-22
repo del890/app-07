@@ -1,0 +1,34 @@
+# Env & secrets
+.env
+.env.local
+.env.*.local
+
+# Python / service
+service/.venv/
+service/**/__pycache__/
+service/**/*.pyc
+service/.mypy_cache/
+service/.pytest_cache/
+service/.ruff_cache/
+service/dist/
+service/build/
+service/*.egg-info/
+service/artifacts/
+service/logs/
+service/calibration/
+
+# Node / client
+client/node_modules/
+client/.nuxt/
+client/.output/
+client/.data/
+client/dist/
+client/.nitro/
+client/.cache/
+client/coverage/
+client/.vite/
+client/.turbo/
+
+# Tooling caches
+.DS_Store
+*.log

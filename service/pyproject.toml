@@ -1,0 +1,97 @@
+[project]
+name = "service"
+version = "0.1.0"
+description = "Lotofácil prediction service: ingestion, statistical analysis, external-signal correlation, and LLM-agent prediction engine."
+requires-python = ">=3.11"
+readme = "README.md"
+dependencies = [
+    "anthropic>=0.40.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "python-dotenv>=1.0.1",
+    "numpy>=2.0.0",
+    "pandas>=2.2.0",
+    "scikit-learn>=1.5.0",
+    "scipy>=1.14.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.7.0",
+    "mypy>=1.13.0",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.27.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/service"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # bugbear
+    "UP",   # pyupgrade
+    "SIM",  # flake8-simplify
+    "RUF",  # ruff-specific
+    "N",    # pep8-naming
+    "C4",   # flake8-comprehensions
+    "PTH",  # flake8-use-pathlib
+]
+ignore = [
+    "E501",  # line length — formatter handles it
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["B", "N"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_reexport = true
+packages = ["service"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["sklearn.*", "scipy.*", "pandas.*"]
+ignore_missing_imports = true
+
+# Tests are scanned for gross errors but aren't held to strict-typing rigor —
+# pytest fixtures work cleanly without explicit annotations on every param.
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --strict-markers --strict-config"
+markers = [
+    "live_llm: test that calls the Anthropic API (opt-in via RUN_LIVE_LLM=1)",
+]
+asyncio_mode = "auto"
