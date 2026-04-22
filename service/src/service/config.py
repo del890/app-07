@@ -53,6 +53,11 @@ def get_settings() -> Settings:
     return Settings()
 
 
+def reset_settings_cache() -> None:
+    """Drop the cached Settings singleton. Only used in tests."""
+    get_settings.cache_clear()
+
+
 def require_runtime_ready(settings: Settings | None = None) -> Settings:
     """Validate hard runtime preconditions; raise ConfigError if unmet.
 

@@ -82,18 +82,18 @@
 
 ## 9. Capability: prediction-service-api
 
-- [ ] 9.1 Mount all routes under `/v1/`.
-- [ ] 9.2 Implement `GET /v1/dataset` returning ingestion provenance.
-- [ ] 9.3 Implement statistical endpoints: `/v1/statistics/frequency`, `/gaps`, `/cooccurrence`, `/structural`, `/order`, `/pi-alignment`.
-- [ ] 9.4 Implement `POST /v1/correlations` (single) and `POST /v1/correlations/batch` (BH-corrected).
+- [x] 9.1 Mount all routes under `/v1/`.
+- [x] 9.2 Implement `GET /v1/dataset` returning ingestion provenance.
+- [x] 9.3 Implement statistical endpoints: `/v1/statistics/frequency`, `/gaps`, `/cooccurrence`, `/structural`, `/order`, `/pi-alignment`.
+- [x] 9.4 Implement `POST /v1/correlations` (single) and `POST /v1/correlations/batch` (BH-corrected).
 - [ ] 9.5 Implement `POST /v1/predictions/next-draw` and `POST /v1/predictions/scenario-path`, each supporting JSON and SSE via `Accept`.
 - [ ] 9.6 Implement SSE streaming of agent events (tool start, tool result, final) via FastAPI `StreamingResponse`.
-- [ ] 9.7 Implement `GET /v1/health` (liveness) and `GET /v1/ready` (readiness: ingestion done + calibration fresh; 503 otherwise with a body describing the missing precondition).
-- [ ] 9.8 Implement the canonical error envelope `{ "error": { "code", "message", "details" } }` and map status codes (400/404/409/429/5xx).
+- [x] 9.7 Implement `GET /v1/health` (liveness) and `GET /v1/ready` (readiness: ingestion done + calibration fresh; 503 otherwise with a body describing the missing precondition).
+- [x] 9.8 Implement the canonical error envelope `{ "error": { "code", "message", "details" } }` and map status codes (400/404/409/429/5xx).
 - [ ] 9.9 Implement per-client rate limit on `/v1/predictions/*` with `Retry-After`.
-- [ ] 9.10 Wire structured request logging (request id, route, status, duration, dataset hash, model versions, tool-call count, token usage).
-- [ ] 9.11 Ensure `ANTHROPIC_API_KEY` never appears in responses, logs, or stack traces; add a test that asserts this.
-- [ ] 9.12 Integration tests via FastAPI `TestClient`: each route returns the expected shape, error envelope, and headers.
+- [x] 9.10 Wire structured request logging (request id, route, status, duration, dataset hash, model versions, tool-call count, token usage).
+- [x] 9.11 Ensure `ANTHROPIC_API_KEY` never appears in responses, logs, or stack traces; add a test that asserts this.
+- [x] 9.12 Integration tests via FastAPI `TestClient`: each route returns the expected shape, error envelope, and headers.
 
 ## 10. Client: project bootstrap (Nuxt + TypeScript)
 
