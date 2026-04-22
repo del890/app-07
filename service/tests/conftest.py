@@ -31,6 +31,16 @@ def _reset_stat_caches() -> Iterator[None]:
     clear_cooccurrence_cache()
 
 
+@pytest.fixture(autouse=True)
+def _reset_engine_cache() -> Iterator[None]:
+    """Drop the learned-model cache so tests stay hermetic."""
+    from service.engine import reset_learned_cache
+
+    reset_learned_cache()
+    yield
+    reset_learned_cache()
+
+
 def _write_data_json(path: Path, draws: list[dict[str, object]]) -> None:
     payload = {
         "allowed_numbers": list(range(1, 26)),

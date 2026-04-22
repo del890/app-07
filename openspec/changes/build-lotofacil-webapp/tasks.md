@@ -53,11 +53,11 @@
 
 ## 6. Capability: prediction-engine — baseline + learned models
 
-- [ ] 6.1 Implement frequency-recency baseline model producing a 25-length probability vector; deterministic given dataset hash.
-- [ ] 6.2 Engineer features for the learned model (windowed frequencies, gaps, pair-presence flags) and persist the feature spec with a version id.
-- [ ] 6.3 Train a per-number `HistGradientBoostingClassifier` (sklearn) on the oldest 80% slice; save model artifacts with a version id.
-- [ ] 6.4 Ensemble baseline + learned into a single distribution; expose ensemble composition + model versions in the result.
-- [ ] 6.5 Unit tests: baseline is bit-deterministic; learned model loads + predicts; ensemble sums to the expected mass (15).
+- [x] 6.1 Implement frequency-recency baseline model producing a 25-length probability vector; deterministic given dataset hash.
+- [x] 6.2 Engineer features for the learned model (windowed frequencies, gaps, pair-presence flags) and persist the feature spec with a version id.
+- [x] 6.3 Train a per-number `HistGradientBoostingClassifier` (sklearn) on the oldest 80% slice; save model artifacts with a version id.
+- [x] 6.4 Ensemble baseline + learned into a single distribution; expose ensemble composition + model versions in the result.
+- [x] 6.5 Unit tests: baseline is bit-deterministic; learned model loads + predicts; ensemble sums to the expected mass (15).
 
 ## 7. Capability: prediction-engine — calibration
 
