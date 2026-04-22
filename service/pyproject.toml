@@ -54,6 +54,10 @@ select = [
 ]
 ignore = [
     "E501",  # line length — formatter handles it
+    # Allow readable math unicode (× ≥ – →) in comments and docstrings.
+    "RUF001",
+    "RUF002",
+    "RUF003",
 ]
 
 [tool.ruff.lint.per-file-ignores]

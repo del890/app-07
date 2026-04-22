@@ -30,15 +30,15 @@
 
 ## 4. Capability: statistical-analysis
 
-- [ ] 4.1 Implement per-number frequency (full + rolling window N).
-- [ ] 4.2 Implement gap statistics: current gap, mean gap, max gap per number, plus deterministic hot/cold classification with a documented threshold.
-- [ ] 4.3 Implement co-occurrence counts for arities 2, 3, 4 with top-K queries (cap K and arity at sane upper bounds; memoize).
-- [ ] 4.4 Implement structural distributions: sum, even/odd split, per-quintile counts, min/max.
-- [ ] 4.5 Implement intra-draw order analysis; detect whether source data carries original order and label the result accordingly.
-- [ ] 4.6 Implement PI-alignment analysis with an explicit rule catalog; every result must cite the rule used.
-- [ ] 4.7 Attach provenance (dataset hash, window descriptor, computed_at timestamp) to every result via a shared decorator/util.
-- [ ] 4.8 Unit tests: hand-verified golden values for frequency, gap, one pair, one structural metric, one PI rule, on a tiny synthetic dataset.
-- [ ] 4.9 Property tests: frequency shares sum to 1 per window; gap mean × frequency relation holds; sorted-canonical order is stable.
+- [x] 4.1 Implement per-number frequency (full + rolling window N).
+- [x] 4.2 Implement gap statistics: current gap, mean gap, max gap per number, plus deterministic hot/cold classification with a documented threshold.
+- [x] 4.3 Implement co-occurrence counts for arities 2, 3, 4 with top-K queries (cap K and arity at sane upper bounds; memoize).
+- [x] 4.4 Implement structural distributions: sum, even/odd split, per-quintile counts, min/max.
+- [x] 4.5 Implement intra-draw order analysis; detect whether source data carries original order and label the result accordingly.
+- [x] 4.6 Implement PI-alignment analysis with an explicit rule catalog; every result must cite the rule used.
+- [x] 4.7 Attach provenance (dataset hash, window descriptor, computed_at timestamp) to every result via a shared decorator/util.
+- [x] 4.8 Unit tests: hand-verified golden values for frequency, gap, one pair, one structural metric, one PI rule, on a tiny synthetic dataset.
+- [x] 4.9 Property tests: frequency shares sum to 1 per window; gap mean × frequency relation holds; sorted-canonical order is stable.
 
 ## 5. Capability: external-signal-correlation
 
