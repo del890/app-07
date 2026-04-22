@@ -42,14 +42,14 @@
 
 ## 5. Capability: external-signal-correlation
 
-- [ ] 5.1 Define `SignalSeries` Pydantic model (name, cadence, unit, source, date→value rows) with mandatory metadata validation.
-- [ ] 5.2 Implement file-based signal loader (CSV + JSON) under `service/signals/` with schema validation.
-- [ ] 5.3 Implement alignment policy (forward-fill for slower cadences, event-keyed join for calendar, configurable lag) and report it on every correlation result.
-- [ ] 5.4 Implement Spearman correlation + Mann–Whitney fallback for categorical metrics; return effect size + raw p-value + sample size + test used.
-- [ ] 5.5 Enforce minimum sample size (default 30); below it, return the result with `under_powered: true` and do not suppress.
-- [ ] 5.6 Implement batch correlation with Benjamini–Hochberg FDR; return both raw p-values and corrected q-values; document method in response.
-- [ ] 5.7 Label every result with `artifact_type: "research"` and attach the research-only disclaimer.
-- [ ] 5.8 Unit tests: known-correlated synthetic series returns significant, uncorrelated returns non-significant, under-powered is flagged, BH correction matches hand calc on a small batch.
+- [x] 5.1 Define `SignalSeries` Pydantic model (name, cadence, unit, source, date→value rows) with mandatory metadata validation.
+- [x] 5.2 Implement file-based signal loader (CSV + JSON) under `service/signals/` with schema validation.
+- [x] 5.3 Implement alignment policy (forward-fill for slower cadences, event-keyed join for calendar, configurable lag) and report it on every correlation result.
+- [x] 5.4 Implement Spearman correlation + Mann–Whitney fallback for categorical metrics; return effect size + raw p-value + sample size + test used.
+- [x] 5.5 Enforce minimum sample size (default 30); below it, return the result with `under_powered: true` and do not suppress.
+- [x] 5.6 Implement batch correlation with Benjamini–Hochberg FDR; return both raw p-values and corrected q-values; document method in response.
+- [x] 5.7 Label every result with `artifact_type: "research"` and attach the research-only disclaimer.
+- [x] 5.8 Unit tests: known-correlated synthetic series returns significant, uncorrelated returns non-significant, under-powered is flagged, BH correction matches hand calc on a small batch.
 
 ## 6. Capability: prediction-engine — baseline + learned models
 
