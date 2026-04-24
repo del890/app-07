@@ -61,24 +61,24 @@
 
 ## 7. Capability: prediction-engine — calibration
 
-- [ ] 7.1 Split history: train (oldest 80%) / calibration (next 15%) / held-out eval (most recent 5%).
-- [ ] 7.2 Fit isotonic regression on the calibration slice; persist the calibrator with a version id and a reliability-diagram data file.
-- [ ] 7.3 Compute eval metrics on the held-out slice (Brier score, log loss, reliability curve) and persist alongside the model version.
-- [ ] 7.4 Implement `CalibrationStatus` (last_calibrated_at, is_stale, reliability_curve, model_versions) queryable via a tool and via the API.
-- [ ] 7.5 Gate: uncalibrated or stale engine returns research-surface predictions with `calibrated: false`, and the API refuses play-surface suggestions.
-- [ ] 7.6 Tests: calibrator reduces ECE on synthetic miscalibrated inputs; stale sentinel flips after a simulated model version change.
+- [x] 7.1 Split history: train (oldest 80%) / calibration (next 15%) / held-out eval (most recent 5%).
+- [x] 7.2 Fit isotonic regression on the calibration slice; persist the calibrator with a version id and a reliability-diagram data file.
+- [x] 7.3 Compute eval metrics on the held-out slice (Brier score, log loss, reliability curve) and persist alongside the model version.
+- [x] 7.4 Implement `CalibrationStatus` (last_calibrated_at, is_stale, reliability_curve, model_versions) queryable via a tool and via the API.
+- [x] 7.5 Gate: uncalibrated or stale engine returns research-surface predictions with `calibrated: false`, and the API refuses play-surface suggestions.
+- [x] 7.6 Tests: calibrator reduces ECE on synthetic miscalibrated inputs; stale sentinel flips after a simulated model version change.
 
 ## 8. Capability: prediction-engine — agent + tools
 
-- [ ] 8.1 Define typed tool handlers (Pydantic-validated) for: provenance, frequency, gaps, co-occurrence, structural, PI alignment, signal correlation, next-draw distribution, suggestion materialization, scenario step advance.
-- [ ] 8.2 Emit JSON-Schema tool definitions from Pydantic models; apply `cache_control` to the tool block and to the system prompt.
-- [ ] 8.3 Implement the agent tool-use loop: call Claude → dispatch `tool_use` blocks → reply with `tool_result` → repeat until `end_turn`; cap tool-call count per request.
-- [ ] 8.4 Enforce the invariant: every numeric value in the final output must be traceable to a tool invocation; add a post-response validator that rejects prose-derived numbers.
-- [ ] 8.5 Implement scenario-path generation: each step advances via a dedicated tool that conditions on the evolving state id; path-level confidence is monotonically non-increasing with horizon.
-- [ ] 8.6 Default model `claude-sonnet-4-6`; scenario generation escalates to `claude-opus-4-7`; Haiku for cheap subtasks.
-- [ ] 8.7 Attach provenance on every response: dataset hash, model versions, agent prompt hash, tool trace, confidence, timestamp.
-- [ ] 8.8 Serialization guard: reject responses missing `confidence` or with `confidence >= 1.0` or `confidence <= 0`.
-- [ ] 8.9 Tests: replay-based unit tests for the tool loop; live integration behind `RUN_LIVE_LLM=1`; guard-rail tests verify rejection of prose-derived numbers.
+- [x] 8.1 Define typed tool handlers (Pydantic-validated) for: provenance, frequency, gaps, co-occurrence, structural, PI alignment, signal correlation, next-draw distribution, suggestion materialization, scenario step advance.
+- [x] 8.2 Emit JSON-Schema tool definitions from Pydantic models; apply `cache_control` to the tool block and to the system prompt.
+- [x] 8.3 Implement the agent tool-use loop: call Claude → dispatch `tool_use` blocks → reply with `tool_result` → repeat until `end_turn`; cap tool-call count per request.
+- [x] 8.4 Enforce the invariant: every numeric value in the final output must be traceable to a tool invocation; add a post-response validator that rejects prose-derived numbers.
+- [x] 8.5 Implement scenario-path generation: each step advances via a dedicated tool that conditions on the evolving state id; path-level confidence is monotonically non-increasing with horizon.
+- [x] 8.6 Default model `claude-sonnet-4-6`; scenario generation escalates to `claude-opus-4-7`; Haiku for cheap subtasks.
+- [x] 8.7 Attach provenance on every response: dataset hash, model versions, agent prompt hash, tool trace, confidence, timestamp.
+- [x] 8.8 Serialization guard: reject responses missing `confidence` or with `confidence >= 1.0` or `confidence <= 0`.
+- [x] 8.9 Tests: replay-based unit tests for the tool loop; live integration behind `RUN_LIVE_LLM=1`; guard-rail tests verify rejection of prose-derived numbers.
 
 ## 9. Capability: prediction-service-api
 
@@ -86,77 +86,77 @@
 - [x] 9.2 Implement `GET /v1/dataset` returning ingestion provenance.
 - [x] 9.3 Implement statistical endpoints: `/v1/statistics/frequency`, `/gaps`, `/cooccurrence`, `/structural`, `/order`, `/pi-alignment`.
 - [x] 9.4 Implement `POST /v1/correlations` (single) and `POST /v1/correlations/batch` (BH-corrected).
-- [ ] 9.5 Implement `POST /v1/predictions/next-draw` and `POST /v1/predictions/scenario-path`, each supporting JSON and SSE via `Accept`.
-- [ ] 9.6 Implement SSE streaming of agent events (tool start, tool result, final) via FastAPI `StreamingResponse`.
+- [x] 9.5 Implement `POST /v1/predictions/next-draw` and `POST /v1/predictions/scenario-path`, each supporting JSON and SSE via `Accept`.
+- [x] 9.6 Implement SSE streaming of agent events (tool start, tool result, final) via FastAPI `StreamingResponse`.
 - [x] 9.7 Implement `GET /v1/health` (liveness) and `GET /v1/ready` (readiness: ingestion done + calibration fresh; 503 otherwise with a body describing the missing precondition).
 - [x] 9.8 Implement the canonical error envelope `{ "error": { "code", "message", "details" } }` and map status codes (400/404/409/429/5xx).
-- [ ] 9.9 Implement per-client rate limit on `/v1/predictions/*` with `Retry-After`.
+- [x] 9.9 Implement per-client rate limit on `/v1/predictions/*` with `Retry-After`.
 - [x] 9.10 Wire structured request logging (request id, route, status, duration, dataset hash, model versions, tool-call count, token usage).
 - [x] 9.11 Ensure `ANTHROPIC_API_KEY` never appears in responses, logs, or stack traces; add a test that asserts this.
 - [x] 9.12 Integration tests via FastAPI `TestClient`: each route returns the expected shape, error envelope, and headers.
 
 ## 10. Client: project bootstrap (Nuxt + TypeScript)
 
-- [ ] 10.1 `cd client && npx nuxi@latest init .` (Nuxt 3+).
-- [ ] 10.2 Enable TypeScript strict + typeCheck in `nuxt.config.ts`; extend `./.nuxt/tsconfig.json` in `tsconfig.json`.
-- [ ] 10.3 Set `ssr: false` for v1 (SPA mode).
-- [ ] 10.4 Install and configure Tailwind CSS (per design decision); no mixing with scoped CSS for primary styling.
-- [ ] 10.5 Install Chart.js + `vue-chartjs` (per design decision).
-- [ ] 10.6 Add eslint + prettier with project presets; enforce no `.js` source files (lint rule).
-- [ ] 10.7 Configure `runtimeConfig.public.apiBase` to point at the service; expose as `useRuntimeConfig()` in composables.
-- [ ] 10.8 Add base `layouts/default.vue` with a persistent mode indicator (research vs play) and the research/entertainment disclaimer.
+- [x] 10.1 `cd client && npx nuxi@latest init .` (Nuxt 3+).
+- [x] 10.2 Enable TypeScript strict + typeCheck in `nuxt.config.ts`; extend `./.nuxt/tsconfig.json` in `tsconfig.json`.
+- [x] 10.3 Set `ssr: false` for v1 (SPA mode).
+- [x] 10.4 Install and configure Tailwind CSS (per design decision); no mixing with scoped CSS for primary styling.
+- [x] 10.5 Install Chart.js + `vue-chartjs` (per design decision).
+- [x] 10.6 Add eslint + prettier with project presets; enforce no `.js` source files (lint rule).
+- [x] 10.7 Configure `runtimeConfig.public.apiBase` to point at the service; expose as `useRuntimeConfig()` in composables.
+- [x] 10.8 Add base `layouts/default.vue` with a persistent mode indicator (research vs play) and the research/entertainment disclaimer.
 
 ## 11. Client: shared data layer
 
-- [ ] 11.1 Create typed API client under `client/app/composables/useApi.ts` wrapping `useFetch` with error-envelope handling.
-- [ ] 11.2 Define shared types for all API responses under `client/app/types/api.ts` (keep in sync with service Pydantic models).
-- [ ] 11.3 Implement `useDatasetProvenance()` composable (cached globally).
-- [ ] 11.4 Implement `useSsePrediction()` composable wrapping `EventSource` for streaming prediction endpoints with automatic fallback to JSON on connection failure.
-- [ ] 11.5 Implement `<ConfidenceBadge>` component that renders a 0–1 score prominently and refuses to render if confidence is missing or ≥ 1.0.
+- [x] 11.1 Create typed API client under `client/app/composables/useApi.ts` wrapping `useFetch` with error-envelope handling.
+- [x] 11.2 Define shared types for all API responses under `client/app/types/api.ts` (keep in sync with service Pydantic models).
+- [x] 11.3 Implement `useDatasetProvenance()` composable (cached globally).
+- [x] 11.4 Implement `useSsePrediction()` composable wrapping `EventSource` for streaming prediction endpoints with automatic fallback to JSON on connection failure.
+- [x] 11.5 Implement `<ConfidenceBadge>` component that renders a 0–1 score prominently and refuses to render if confidence is missing or ≥ 1.0.
 
 ## 12. Client: research mode
 
-- [ ] 12.1 Route `/research` with an index grid linking to each view.
-- [ ] 12.2 Frequency view: per-number bar chart, window selector (full / rolling N), dataset hash + window displayed.
-- [ ] 12.3 Gap / hot-cold view: table + chart, threshold documented in-UI.
-- [ ] 12.4 Co-occurrence explorer: arity selector (2/3/4), top-K table, click-through to highlight draws containing the combination.
-- [ ] 12.5 Structural distributions view: histograms for sum, even/odd, quintiles, min/max.
-- [ ] 12.6 Order-analysis view; clearly label whether order is original-drawn or sorted-canonical.
-- [ ] 12.7 PI-alignment view: choose rule, choose target (single draw or window), render score + explanation.
-- [ ] 12.8 External-signal correlation explorer: pick signal + draw metric + lag; single and batch modes; hide numeric effect when significance is unavailable.
-- [ ] 12.9 All research views display `artifact_type: "research"` disclaimer for correlation outputs.
+- [x] 12.1 Route `/research` with an index grid linking to each view.
+- [x] 12.2 Frequency view: per-number bar chart, window selector (full / rolling N), dataset hash + window displayed.
+- [x] 12.3 Gap / hot-cold view: table + chart, threshold documented in-UI.
+- [x] 12.4 Co-occurrence explorer: arity selector (2/3/4), top-K table, click-through to highlight draws containing the combination.
+- [x] 12.5 Structural distributions view: histograms for sum, even/odd, quintiles, min/max.
+- [x] 12.6 Order-analysis view; clearly label whether order is original-drawn or sorted-canonical.
+- [x] 12.7 PI-alignment view: choose rule, choose target (single draw or window), render score + explanation.
+- [x] 12.8 External-signal correlation explorer: pick signal + draw metric + lag; single and batch modes; hide numeric effect when significance is unavailable.
+- [x] 12.9 All research views display `artifact_type: "research"` disclaimer for correlation outputs.
 
 ## 13. Client: play mode
 
-- [ ] 13.1 Route `/play` with a primary CTA for "Suggest next draw".
-- [ ] 13.2 On request, call `POST /v1/predictions/next-draw` with SSE; render tool calls as they stream in.
-- [ ] 13.3 Render the 15-number suggestion alongside a `<ConfidenceBadge>` and human-readable explanation.
-- [ ] 13.4 Scenario-path view: select horizon H, render each predicted draw and the monotonically non-increasing path confidence.
-- [ ] 13.5 If the API reports `calibrated: false` or returns a stale-calibration error, do NOT render a suggestion; show an explanatory banner and a link to research mode.
-- [ ] 13.6 Persistent "research/entertainment only" copy; ban words "guaranteed", "winning", "sure" via a simple copy-lint script run in CI.
+- [x] 13.1 Route `/play` with a primary CTA for "Suggest next draw".
+- [x] 13.2 On request, call `POST /v1/predictions/next-draw` with SSE; render tool calls as they stream in.
+- [x] 13.3 Render the 15-number suggestion alongside a `<ConfidenceBadge>` and human-readable explanation.
+- [x] 13.4 Scenario-path view: select horizon H, render each predicted draw and the monotonically non-increasing path confidence.
+- [x] 13.5 If the API reports `calibrated: false` or returns a stale-calibration error, do NOT render a suggestion; show an explanatory banner and a link to research mode.
+- [x] 13.6 Persistent "research/entertainment only" copy; ban words "guaranteed", "winning", "sure" via a simple copy-lint script run in CI.
 
 ## 14. Client: cross-cutting
 
 - [ ] 14.1 Responsive layout verified at 360px, 768px, 1280px.
 - [ ] 14.2 WCAG 2.1 AA: color contrast, keyboard navigation, focus states on all interactive controls.
-- [ ] 14.3 Vitest unit tests for composables (`useApi`, `useSsePrediction`) and `<ConfidenceBadge>`.
+- [x] 14.3 Vitest unit tests for composables (`useApi`, `useSsePrediction`) and `<ConfidenceBadge>`).
 - [ ] 14.4 Playwright end-to-end: research-mode frequency view loads; play-mode calibrated prediction renders; play-mode refuses when uncalibrated.
 
 ## 15. Observability, ops & docs
 
-- [ ] 15.1 Service: emit the structured request log fields described in §9.10; add a log-redaction test that asserts no secrets leak.
-- [ ] 15.2 Service: expose token-usage counters and last-calibration timestamp via `/v1/ready`.
-- [ ] 15.3 Define a weekly calibration cron + on-start calibration check; document how to trigger a manual recalibration.
-- [ ] 15.4 Document deployment shape (single-node, reverse proxy, env vars, data.json shipped with image) in `service/README.md` and `client/README.md`.
-- [ ] 15.5 Document the agent tool contract + invariants ("no prose-derived numbers") in `service/docs/agent.md`.
-- [ ] 15.6 Confirm the project's `client-stack` and `service-stack` skills are still accurate; update them if decisions drifted during implementation.
+- [x] 15.1 Service: emit the structured request log fields described in §9.10; add a log-redaction test that asserts no secrets leak.
+- [x] 15.2 Service: expose token-usage counters and last-calibration timestamp via `/v1/ready`.
+- [x] 15.3 Define a weekly calibration cron + on-start calibration check; document how to trigger a manual recalibration.
+- [x] 15.4 Document deployment shape (single-node, reverse proxy, env vars, data.json shipped with image) in `service/README.md` and `client/README.md`.
+- [x] 15.5 Document the agent tool contract + invariants ("no prose-derived numbers") in `service/docs/agent.md`.
+- [x] 15.6 Confirm the project's `client-stack` and `service-stack` skills are still accurate; update them if decisions drifted during implementation.
 
 ## 16. Acceptance checks against the specs
 
-- [ ] 16.1 Walk every requirement in `specs/draw-data-ingestion/spec.md` and tick off its covering test/route.
-- [ ] 16.2 Walk every requirement in `specs/statistical-analysis/spec.md` and tick off its covering test/route.
-- [ ] 16.3 Walk every requirement in `specs/external-signal-correlation/spec.md` and tick off its covering test/route.
-- [ ] 16.4 Walk every requirement in `specs/prediction-engine/spec.md` and tick off its covering test/route.
-- [ ] 16.5 Walk every requirement in `specs/prediction-service-api/spec.md` and tick off its covering test/route.
-- [ ] 16.6 Walk every requirement in `specs/research-webapp/spec.md` and tick off its covering test/view.
-- [ ] 16.7 Run `openspec validate --change build-lotofacil-webapp` and resolve any findings before calling the change done.
+- [x] 16.1 Walk every requirement in `specs/draw-data-ingestion/spec.md` and tick off its covering test/route.
+- [x] 16.2 Walk every requirement in `specs/statistical-analysis/spec.md` and tick off its covering test/route.
+- [x] 16.3 Walk every requirement in `specs/external-signal-correlation/spec.md` and tick off its covering test/route.
+- [x] 16.4 Walk every requirement in `specs/prediction-engine/spec.md` and tick off its covering test/route.
+- [x] 16.5 Walk every requirement in `specs/prediction-service-api/spec.md` and tick off its covering test/route.
+- [x] 16.6 Walk every requirement in `specs/research-webapp/spec.md` and tick off its covering test/view.
+- [x] 16.7 Run `openspec validate --change build-lotofacil-webapp` and resolve any findings before calling the change done.

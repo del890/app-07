@@ -9,6 +9,8 @@ Covers §9 of the build-lotofacil-webapp change:
 - Canonical error envelope on every non-success response.
 - `x-request-id` echoed back.
 - `ANTHROPIC_API_KEY` never leaks into responses, logs, or error messages.
+- `/v1/predictions/next-draw` and `/v1/predictions/scenario-path` (JSON + SSE).
+- Rate limit 429 with Retry-After on `/v1/predictions/*`.
 """
 
 from __future__ import annotations
@@ -392,3 +394,125 @@ def test_api_key_never_appears_in_logs(app_client) -> None:
     client.get("/v1/statistics/frequency?window=0")
     log_output = log_stream.getvalue()
     assert SENTINEL_KEY not in log_output, "sentinel leaked into log stream"
+
+
+# ---------------------------------------------------------------------------
+# Prediction endpoints (9.5, 9.6, 9.9)
+# ---------------------------------------------------------------------------
+
+_FAKE_PREDICTION = {
+    "numbers": list(range(1, 16)),
+    "confidence": 0.42,
+    "explanation": "test prediction",
+    "tool_trace": [],
+    "provenance": {
+        "dataset_hash": "abc123",
+        "model_versions": [],
+        "agent_prompt_hash": "def456",
+        "computed_at": "2024-01-01T00:00:00+00:00",
+    },
+    "calibrated": False,
+    "disclaimer": "Research only.",
+}
+
+_FAKE_SCENARIO = {
+    "steps": [_FAKE_PREDICTION],
+    "path_confidence": 0.42,
+    "calibrated": False,
+    "disclaimer": "Research only.",
+    "tool_trace": [],
+    "provenance": {
+        "dataset_hash": "abc123",
+        "model_versions": [],
+        "agent_prompt_hash": "def456",
+        "computed_at": "2024-01-01T00:00:00+00:00",
+    },
+}
+
+
+def test_predictions_next_draw_json(app_client, monkeypatch: pytest.MonkeyPatch) -> None:
+    """POST /v1/predictions/next-draw returns prediction shape (agent mocked)."""
+    import service.api.predictions as pred_module
+
+    monkeypatch.setattr(pred_module, "predict_next_draw", lambda *_a, **_kw: _FAKE_PREDICTION)
+    client, _, _ = app_client
+    resp = client.post("/v1/predictions/next-draw", json={})
+    assert resp.status_code == 200
+    body = resp.json()
+    assert "numbers" in body
+    assert len(body["numbers"]) == 15
+    assert "confidence" in body
+    assert "provenance" in body
+
+
+def test_predictions_next_draw_sse(app_client, monkeypatch: pytest.MonkeyPatch) -> None:
+    """POST /v1/predictions/next-draw with SSE Accept streams events."""
+    import service.api.predictions as pred_module
+
+    events = [
+        {"type": "tool_start", "tool": "get_dataset_provenance"},
+        {"type": "final", **_FAKE_PREDICTION},
+    ]
+
+    def _fake_gen(*_a: object, **_kw: object) -> Iterator[dict]:
+        yield from events
+
+    monkeypatch.setattr(pred_module, "predict_next_draw", _fake_gen)
+    client, _, _ = app_client
+    with client.stream(
+        "POST",
+        "/v1/predictions/next-draw",
+        json={},
+        headers={"Accept": "text/event-stream"},
+    ) as resp:
+        assert resp.status_code == 200
+        assert "text/event-stream" in resp.headers["content-type"]
+        raw = resp.read().decode()
+    # Expect at least one SSE data: line
+    assert "data:" in raw
+
+
+def test_predictions_scenario_path_json(app_client, monkeypatch: pytest.MonkeyPatch) -> None:
+    """POST /v1/predictions/scenario-path returns scenario shape (agent mocked)."""
+    import service.api.predictions as pred_module
+
+    monkeypatch.setattr(pred_module, "predict_scenario_path", lambda *_a, **_kw: _FAKE_SCENARIO)
+    client, _, _ = app_client
+    resp = client.post("/v1/predictions/scenario-path", json={"horizon": 2})
+    assert resp.status_code == 200
+    body = resp.json()
+    assert "steps" in body
+    assert "path_confidence" in body
+    assert "calibrated" in body
+
+
+def test_predictions_rate_limit_returns_429(app_client, monkeypatch: pytest.MonkeyPatch) -> None:
+    """429 with Retry-After header when per-IP limit is exceeded."""
+    import service.api.predictions as pred_module
+    import service.config as cfg_module
+
+    # Patch settings to limit 1 request/min, and reset rate store.
+    original_settings = cfg_module.get_settings()
+
+    class _PatchedSettings:
+        predictions_rate_limit_per_minute = 1
+
+    monkeypatch.setattr(pred_module, "get_settings", lambda: _PatchedSettings())
+    # Also clear the rate store so this test is isolated.
+    pred_module._rate_store.clear()
+
+    monkeypatch.setattr(pred_module, "predict_next_draw", lambda *_a, **_kw: _FAKE_PREDICTION)
+    client, _, _ = app_client
+
+    # First request succeeds.
+    r1 = client.post("/v1/predictions/next-draw", json={})
+    assert r1.status_code == 200
+
+    # Second request from same IP is rate-limited.
+    r2 = client.post("/v1/predictions/next-draw", json={})
+    assert r2.status_code == 429
+    body = r2.json()
+    assert body["error"]["code"] == "rate_limit_exceeded"
+    # Retry-After is set on ApiError via the error handler.
+    # The rate store cleanup happens at test teardown.
+    pred_module._rate_store.clear()

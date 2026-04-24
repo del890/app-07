@@ -1,0 +1,14 @@
+{
+  "chat.tools.terminal.autoApprove": {
+    "openspec": true,
+    "uv": true,
+    "git stash": true,
+    "npx nuxi@latest": true,
+    "/^node --version && npm --version && which npx 2>&1$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "npm install": true,
+    "mkdir": true
+  }
+}

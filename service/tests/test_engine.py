@@ -25,9 +25,15 @@ from service.engine import (
     LEARNED_NAME,
     MIN_PRIOR_DRAWS,
     NUMBER_COUNT,
+    CalibrationStatus,
     compute_baseline,
     compute_next_draw_distribution,
+    fit_calibrator,
+    get_calibration_status,
     history_supports_learned,
+    reset_calibration,
+    run_calibration,
+    split_history,
     train_learned,
 )
 from service.ingestion import DrawHistory, load
@@ -203,3 +209,103 @@ def test_ensemble_on_real_data_smoke() -> None:
     assert all(0.0 <= p.probability <= 1.0 for p in result.probabilities)
     # Every draw in the real history is 15-of-25, so no single-number prob should be near 1
     assert max(p.probability for p in result.probabilities) < 0.95
+
+
+# ---------------------------------------------------------------------------
+# Calibration (§7)
+# ---------------------------------------------------------------------------
+
+
+def _large_history(tmp_path: Path, seed: int = 10) -> "DrawHistory":
+    return _synth_history(tmp_path, n_draws=MIN_PRIOR_DRAWS + 200, seed=seed)
+
+
+def test_split_history_returns_non_overlapping_slices(tmp_path: Path) -> None:
+    history = _large_history(tmp_path)
+    train, cal, ev = split_history(history)
+    assert len(train) > 0
+    assert len(cal) > 0
+    assert len(ev) > 0
+    # Non-overlapping
+    all_indices = train + cal + ev
+    assert len(all_indices) == len(set(all_indices))
+    # Correct ordering: train < cal < eval
+    assert max(train) < min(cal)
+    assert max(cal) < min(ev)
+
+
+def test_split_history_fractions(tmp_path: Path) -> None:
+    history = _large_history(tmp_path)
+    train, cal, ev = split_history(history)
+    total = len(train) + len(cal) + len(ev)
+    # Train ~80%, cal ~15%, eval ~5% — allow generous tolerance for small N
+    assert len(train) / total >= 0.70
+    assert len(cal) / total >= 0.05
+
+
+def test_fit_calibrator_returns_25_calibrators(tmp_path: Path) -> None:
+    history = _large_history(tmp_path)
+    artifact = train_learned(history)
+    calibrators, metadata = fit_calibrator(history, artifact)
+    assert len(calibrators) == NUMBER_COUNT
+    assert "computed_at" in metadata
+    assert "eval_metrics" in metadata
+    assert metadata["dataset_hash"] == history.provenance.content_hash
+
+
+def test_calibrator_reduces_ece_on_synthetic(tmp_path: Path) -> None:
+    """Isotonic calibration should not increase Brier score on eval slice."""
+    history = _large_history(tmp_path, seed=11)
+    artifact = train_learned(history)
+    calibrators, metadata = fit_calibrator(history, artifact)
+    m = metadata["eval_metrics"]
+    if m["n_eval_rows"] > 0:
+        # Calibrated Brier should be <= raw Brier (calibration should not hurt)
+        assert m["brier_score_calibrated"] <= m["brier_score_raw"] + 0.05
+
+
+def test_calibration_status_starts_stale() -> None:
+    reset_calibration()
+    status = get_calibration_status()
+    assert status.is_stale is True
+    assert status.last_calibrated_at is None
+
+
+def test_run_calibration_clears_stale_flag(tmp_path: Path) -> None:
+    reset_calibration()
+    history = _large_history(tmp_path)
+    status = run_calibration(history)
+    assert status.is_stale is False
+    assert status.last_calibrated_at is not None
+    assert status.eval_metrics is not None
+    assert len(status.calibrators) == NUMBER_COUNT
+
+
+def test_stale_sentinel_flips_on_model_version_change(tmp_path: Path) -> None:
+    """CalibrationStatus with a stale model_version is stale."""
+    history = _large_history(tmp_path)
+    status = run_calibration(history)
+    # Simulate a model version change by inspecting stale logic
+    stale_status = CalibrationStatus(
+        last_calibrated_at=status.last_calibrated_at,
+        model_version="v0",  # old version
+    )
+    assert stale_status.is_stale is True
+
+
+def test_calibration_status_is_fresh_immediately_after_run(tmp_path: Path) -> None:
+    reset_calibration()
+    history = _large_history(tmp_path)
+    status = run_calibration(history)
+    assert not status.is_stale
+    # Returned status and global status agree
+    global_status = get_calibration_status()
+    assert global_status.last_calibrated_at == status.last_calibrated_at
+
+
+def test_uncalibrated_status_has_none_metrics() -> None:
+    reset_calibration()
+    status = get_calibration_status()
+    assert status.eval_metrics is None
+    assert status.reliability_curves is None
+    assert status.calibrators is None

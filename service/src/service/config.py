@@ -11,7 +11,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 EnvName = Literal["dev", "staging", "prod"]
@@ -24,9 +24,14 @@ def _default_data_json() -> Path:
     return Path(__file__).resolve().parents[3] / "data.json"
 
 
+def _default_env_file() -> Path:
+    """Resolve .env from the repo root (service/src/service/ -> repo root)."""
+    return Path(__file__).resolve().parents[3] / ".env"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(_default_env_file()),
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
@@ -35,8 +40,17 @@ class Settings(BaseSettings):
     anthropic_api_key: SecretStr | None = None
     env: EnvName = "dev"
     log_level: LogLevel = "INFO"
+    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
 
     data_json_path: Path = Field(default_factory=_default_data_json)
+
+    @field_validator("data_json_path", mode="before")
+    @classmethod
+    def _coerce_empty_data_json_path(cls, v: object) -> object:
+        """Treat an empty DATA_JSON_PATH as unset, falling back to the default."""
+        if isinstance(v, str) and not v.strip():
+            return _default_data_json()
+        return v
 
     predictions_rate_limit_per_minute: int = 10
     llm_monthly_spend_cap_usd: float = 50.0

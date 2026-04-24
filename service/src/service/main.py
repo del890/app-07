@@ -20,6 +20,7 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 
 from service import __version__
 from service.api import api_router, install_error_handlers
@@ -70,6 +71,12 @@ app = FastAPI(
 )
 
 install_error_handlers(app)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=get_settings().cors_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(api_router)
 
 

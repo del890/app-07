@@ -76,21 +76,45 @@ def _ingestion_check() -> ReadinessStatus:
 
 
 def _calibration_check() -> ReadinessStatus:
-    # Placeholder until §7 lands. Calibration is required by spec; while the
-    # engine doesn't exist yet, /ready reports it as missing rather than
-    # silently pretending it's OK.
+    from service.engine import get_calibration_status
+    status = get_calibration_status()
+    ok = not status.is_stale
+    if ok:
+        detail = f"calibration is fresh (last run: {status.last_calibrated_at})"
+    else:
+        detail = (
+            "calibration is stale or has never run; "
+            "play-surface predictions are unavailable"
+        )
+    extra: dict[str, Any] = {
+        "is_stale": status.is_stale,
+    }
+    if status.last_calibrated_at is not None:
+        extra["last_calibrated_at"] = status.last_calibrated_at.isoformat()
+    if status.eval_metrics:
+        extra["eval_metrics"] = status.eval_metrics
     return ReadinessStatus(
         name="calibration",
-        ok=False,
+        ok=ok,
         required=True,
-        detail=(
-            "prediction-engine calibration not implemented yet; play-surface "
-            "predictions are unavailable until calibration runs"
-        ),
-        extra={"status": "not_implemented"},
+        detail=detail,
+        extra=extra,
+    )
+
+
+def _token_usage_check() -> ReadinessStatus:
+    from service.token_counters import snapshot as token_snapshot
+    usage = token_snapshot()
+    return ReadinessStatus(
+        name="token_usage",
+        ok=True,
+        required=False,
+        detail="in-process token usage since last restart",
+        extra=usage,
     )
 
 
 def install_default_checks() -> None:
     register("ingestion", _ingestion_check)
     register("calibration", _calibration_check)
+    register("token_usage", _token_usage_check)

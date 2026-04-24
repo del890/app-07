@@ -60,6 +60,11 @@ class LearnedArtifact:
     train_split_size: int
     splits: TrainingSplits
     dataset_hash: str
+    # Full training matrix — kept alive here so calibration can reuse it without
+    # rebuilding, avoiding a double-allocation pattern that triggers heap corruption
+    # in numpy 2.4+ / sklearn 1.8.
+    x_all: np.ndarray  # shape (N_rows, 25, FEATURE_COUNT)
+    y_all: np.ndarray  # shape (N_rows, 25)
 
     def predict_probabilities(self, history: DrawHistory) -> ComponentDistribution:
         """Produce a 25-length distribution for the draw immediately after the history."""
@@ -168,6 +173,8 @@ def train_learned(history: DrawHistory) -> LearnedArtifact:
         train_split_size=int(train_rows.size),
         splits=splits,
         dataset_hash=history.provenance.content_hash,
+        x_all=x_all,
+        y_all=y_all,
     )
 
 
