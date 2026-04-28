@@ -85,12 +85,20 @@ def install_error_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(RequestValidationError)
     async def _validation_handler(_req: Request, exc: RequestValidationError) -> JSONResponse:
+        # Pydantic v2 field validators may embed a live exception in ctx["error"],
+        # which is not JSON-serializable.  Stringify ctx values defensively.
+        safe_errors = []
+        for err in exc.errors():
+            safe_err = dict(err)
+            if "ctx" in safe_err:
+                safe_err["ctx"] = {k: str(v) for k, v in safe_err["ctx"].items()}
+            safe_errors.append(safe_err)
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content=_envelope(
                 code="validation_error",
                 message="request body failed validation",
-                details={"errors": exc.errors()},
+                details={"errors": safe_errors},
             ),
         )
 

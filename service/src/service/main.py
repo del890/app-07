@@ -30,6 +30,7 @@ from service.correlation import registry as signal_registry
 from service.correlation.loader import SignalLoadError
 from service.ingestion import get_cached_history, ingest_from_settings
 from service.logging_config import configure_logging
+from service.sync.task import run_sync, sync_state
 
 log = logging.getLogger("service.request")
 startup_log = logging.getLogger("service.startup")
@@ -61,7 +62,35 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
             "dataset_path": str(settings.data_json_path),
         },
     )
+
+    scheduler = None
+    if settings.sync_interval_minutes > 0:
+        from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+        scheduler = AsyncIOScheduler()
+        scheduler.add_job(
+            run_sync,
+            "interval",
+            minutes=settings.sync_interval_minutes,
+            kwargs={
+                "api_url": settings.lotofacil_api_url,
+                "data_path": settings.data_json_path,
+                "state": sync_state,
+            },
+            max_instances=1,
+            id="dataset_sync",
+        )
+        scheduler.start()
+        startup_log.info(
+            "sync.scheduler.started",
+            extra={"interval_minutes": settings.sync_interval_minutes},
+        )
+
     yield
+
+    if scheduler is not None and scheduler.running:
+        scheduler.shutdown(wait=False)
+        startup_log.info("sync.scheduler.stopped")
 
 
 app = FastAPI(

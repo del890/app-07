@@ -35,6 +35,12 @@ async function request() {
         Scenario Path
       </NuxtLink>
       <NuxtLink
+        to="/play/my-draw"
+        class="px-5 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors"
+      >
+        My Draw
+      </NuxtLink>
+      <NuxtLink
         to="/play/history"
         class="px-5 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
       >

@@ -20,6 +20,7 @@ from service.ingestion import (
     DrawRecord,
     ingest_from_settings,
     load,
+    reload_from_settings,
     reset_cache,
 )
 
@@ -252,6 +253,74 @@ def test_golden_tiny_dataset(tmp_path: Path) -> None:
     # Original draw order is preserved on id=3 (unsorted source).
     assert history.by_original_id(3).numbers_drawn[:3] == (5, 1, 3)
     assert history.by_original_id(3).numbers_sorted[:3] == (1, 2, 3)
+
+
+# --- Hot-reload -----------------------------------------------------------
+
+
+def test_reload_returns_updated_history(tmp_data_json, make_settings) -> None:
+    """reload_from_settings clears the cache and re-reads the file."""
+    path, _ = tmp_data_json([_draw(id_=1, d="01-01-2020")])
+    settings = make_settings(path)
+
+    first = ingest_from_settings(settings)
+    assert len(first) == 1
+
+    # Overwrite the file with two draws.
+    import json
+
+    payload = {
+        "allowed_numbers": list(range(1, 26)),
+        "dataset": [
+            _draw(id_=2, d="02-01-2020"),
+            _draw(id_=1, d="01-01-2020"),
+        ],
+    }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    second = reload_from_settings(settings)
+    assert len(second) == 2
+    assert second is not first
+
+
+def test_reload_is_idempotent(tmp_data_json, make_settings) -> None:
+    """Calling reload_from_settings twice without file change returns stable result."""
+    path, _ = tmp_data_json([_draw(id_=1, d="01-01-2020")])
+    settings = make_settings(path)
+
+    first = reload_from_settings(settings)
+    second = reload_from_settings(settings)
+    # Both calls load from the same file; result should be structurally identical.
+    assert len(first) == len(second)
+    assert first.provenance.content_hash == second.provenance.content_hash
+
+
+def test_reload_thread_safety(tmp_data_json, make_settings) -> None:
+    """Concurrent reload calls must not corrupt the cache."""
+    import threading
+
+    path, _ = tmp_data_json([_draw(id_=1, d="01-01-2020")])
+    settings = make_settings(path)
+    ingest_from_settings(settings)
+
+    errors: list[Exception] = []
+
+    def _reload() -> None:
+        try:
+            reload_from_settings(settings)
+        except Exception as exc:  # noqa: BLE001
+            errors.append(exc)
+
+    threads = [threading.Thread(target=_reload) for _ in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert errors == [], f"Reload raised errors: {errors}"
+    from service.ingestion import get_cached_history
+
+    assert get_cached_history() is not None
 
 
 # --- Live dataset smoke ---------------------------------------------------

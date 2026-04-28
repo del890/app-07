@@ -516,3 +516,103 @@ def test_predictions_rate_limit_returns_429(app_client, monkeypatch: pytest.Monk
     # Retry-After is set on ApiError via the error handler.
     # The rate store cleanup happens at test teardown.
     pred_module._rate_store.clear()
+
+
+# ---------------------------------------------------------------------------
+# Draw profile
+# ---------------------------------------------------------------------------
+
+# The app_client fixture contains draws:
+# id=1: numbers 1–15  (numbers_sorted = (1,2,...,15))
+# id=2: numbers 2–16  (numbers_sorted = (2,3,...,16))
+# id=3: numbers (5,1,3,4,2,6,7,8,9,10,11,12,13,14,15) → sorted (1–15)
+
+_NUMBERS_1_TO_15 = list(range(1, 16))
+_NUMBERS_2_TO_16 = list(range(2, 17))
+
+
+def test_draw_profile_match_found(app_client) -> None:
+    client, _, _ = app_client
+    resp = client.post(
+        "/v1/statistics/draw-profile",
+        json={"numbers": _NUMBERS_1_TO_15},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["dataset_match"] is not None
+    assert body["dataset_match"]["original_id"] in (1, 3)  # both sort to 1–15
+
+
+def test_draw_profile_no_match(app_client) -> None:
+    client, _, _ = app_client
+    # numbers 11–25 are not in the fixture dataset
+    numbers_11_25 = list(range(11, 26))
+    resp = client.post(
+        "/v1/statistics/draw-profile",
+        json={"numbers": numbers_11_25},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["dataset_match"] is None
+
+
+def test_draw_profile_returns_per_number_frequency(app_client) -> None:
+    client, _, _ = app_client
+    resp = client.post(
+        "/v1/statistics/draw-profile",
+        json={"numbers": _NUMBERS_1_TO_15},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    profiles = body["number_profiles"]
+    assert len(profiles) == 15
+    for p in profiles:
+        assert "number" in p
+        assert "historical_count" in p
+        assert "frequency_rank" in p
+
+
+def test_draw_profile_returns_structural(app_client) -> None:
+    client, _, _ = app_client
+    resp = client.post(
+        "/v1/statistics/draw-profile",
+        json={"numbers": _NUMBERS_1_TO_15},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    s = body["structural"]
+    assert s["total_sum"] == sum(range(1, 16))
+    assert s["min_number"] == 1
+    assert s["max_number"] == 15
+
+
+def test_draw_profile_validation_too_few(app_client) -> None:
+    client, _, _ = app_client
+    resp = client.post(
+        "/v1/statistics/draw-profile",
+        json={"numbers": list(range(1, 15))},  # 14 numbers
+    )
+    assert resp.status_code == 400
+
+
+def test_draw_profile_validation_too_many(app_client) -> None:
+    client, _, _ = app_client
+    resp = client.post(
+        "/v1/statistics/draw-profile",
+        json={"numbers": list(range(1, 17))},  # 16 numbers
+    )
+    assert resp.status_code == 400
+
+
+def test_draw_profile_validation_duplicate(app_client) -> None:
+    client, _, _ = app_client
+    bad = [1, 1, *list(range(2, 15))]  # 15 items but duplicate 1
+    resp = client.post("/v1/statistics/draw-profile", json={"numbers": bad})
+    assert resp.status_code == 400
+
+
+def test_draw_profile_validation_out_of_range(app_client) -> None:
+    client, _, _ = app_client
+    bad = [26, *list(range(1, 15))]  # number 26 is invalid
+    resp = client.post("/v1/statistics/draw-profile", json={"numbers": bad})
+    assert resp.status_code == 400

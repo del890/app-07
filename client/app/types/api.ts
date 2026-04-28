@@ -219,3 +219,59 @@ export interface PredictionHistoryPage {
   items: StoredPrediction[]
 }
 
+// ── Draw Profile ──────────────────────────────────────────────────────────
+
+export interface DrawProfileRequest {
+  numbers: number[]
+}
+
+export interface NumberProfile {
+  number: number
+  historical_count: number
+  frequency_rank: number
+}
+
+export interface PairCooccurrence {
+  numbers: [number, number]
+  count: number
+}
+
+export interface DrawStructuralProfile {
+  total_sum: number
+  even_count: number
+  odd_count: number
+  min_number: number
+  max_number: number
+  range_span: number
+  quintile_counts: number[] // length 5, counts per quintile 1–5, 6–10, 11–15, 16–20, 21–25
+}
+
+export interface DatasetMatch {
+  original_id: number
+  date: string
+}
+
+export interface DrawProfileResponse {
+  numbers: number[]
+  number_profiles: NumberProfile[]
+  pair_cooccurrences: PairCooccurrence[]
+  structural: DrawStructuralProfile
+  dataset_match: DatasetMatch | null
+}
+
+// ── Local storage ─────────────────────────────────────────────────────────
+
+export interface MyDrawEntry {
+  id?: number       // auto-increment primary key (set by IndexedDB)
+  savedAt: string   // ISO datetime
+  numbers: number[]
+  profile: DrawProfileResponse
+}
+
+// ── Ticket scanner ────────────────────────────────────────────────────────
+
+export interface ScannedTicket {
+  /** Up to 3 game sets; each is a sorted list of marked numbers (1–25). */
+  games: number[][]
+}
+

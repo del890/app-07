@@ -10,10 +10,6 @@ const isDone = computed(() => status.value === 'done')
 // Guard: never render suggestion if calibrated is false (13.5)
 const isCalibrated = computed(() => prediction.value?.calibrated === true)
 
-const toolEvents = computed(() =>
-  events.value.filter((e) => e.type === 'tool_start' || e.type === 'tool_result'),
-)
-
 function start() {
   reset()
   predictNextDraw()
@@ -26,23 +22,26 @@ function start() {
     <h1 class="text-2xl font-bold mb-6">Suggest Next Draw</h1>
 
     <button
-      class="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50"
+      class="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50"
       :disabled="isStreaming"
       @click="start"
     >
+      <svg
+        v-if="isStreaming"
+        class="animate-spin h-4 w-4"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+      </svg>
       {{ isStreaming ? 'Analysing…' : 'Generate Suggestion' }}
     </button>
 
     <!-- Streaming tool events -->
-    <div v-if="toolEvents.length" class="mt-6 space-y-2 max-w-xl">
-      <div
-        v-for="(ev, i) in toolEvents"
-        :key="i"
-        class="text-xs font-mono bg-gray-50 border border-gray-200 rounded px-3 py-2"
-      >
-        <span v-if="ev.type === 'tool_start'" class="text-blue-600">▶ {{ ev.tool_name }}</span>
-        <span v-else-if="ev.type === 'tool_result'" class="text-green-600">✓ {{ ev.tool_name }}</span>
-      </div>
+    <div class="mt-6 max-w-xl">
+      <ToolProgressTimeline :events="events" />
     </div>
 
     <!-- Uncalibrated banner (13.5) -->
@@ -61,29 +60,13 @@ function start() {
     </div>
 
     <!-- Prediction result -->
-    <div v-if="isDone && isCalibrated && prediction" class="mt-6 bg-white rounded-lg border border-gray-200 p-6 max-w-xl">
-      <div class="flex items-center gap-3 mb-4">
-        <h2 class="font-semibold text-lg">Suggested Numbers</h2>
-        <ConfidenceBadge :confidence="prediction.confidence" />
-      </div>
-
-      <!-- 15-number grid -->
-      <div class="flex flex-wrap gap-2 mb-4">
-        <span
-          v-for="n in prediction.numbers"
-          :key="n"
-          class="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100 text-purple-800 font-bold text-sm"
-        >
-          {{ n }}
-        </span>
-      </div>
-
-      <p class="text-sm text-gray-600 mb-4">{{ prediction.explanation }}</p>
-
-      <div class="text-xs text-gray-400 border-t pt-3">
-        Dataset: {{ prediction.provenance.dataset_hash.slice(0, 12) }}
-        · {{ prediction.provenance.computed_at }}
-      </div>
+    <div v-if="isDone && isCalibrated && prediction" class="mt-6 max-w-xl">
+      <PredictionCard
+        :numbers="prediction.numbers"
+        :confidence="prediction.confidence"
+        :explanation="prediction.explanation"
+        :provenance="prediction.provenance"
+      />
     </div>
 
     <!-- Error -->

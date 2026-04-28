@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ScenarioPathPrediction } from '~/types/api'
 
-const { status, result, error, predictScenarioPath, reset } = useSsePrediction()
+const { status, events, result, error, predictScenarioPath, reset } = useSsePrediction()
 
 const horizon = ref(3)
 const prediction = computed(() => result.value as ScenarioPathPrediction | null)
@@ -32,12 +32,27 @@ function start() {
         />
       </label>
       <button
-        class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50"
+        class="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50"
         :disabled="isStreaming"
         @click="start"
       >
+        <svg
+          v-if="isStreaming"
+          class="animate-spin h-4 w-4"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        </svg>
         {{ isStreaming ? 'Generating…' : 'Generate Scenario' }}
       </button>
+    </div>
+
+    <!-- Streaming tool events -->
+    <div class="max-w-xl">
+      <ToolProgressTimeline :events="events" />
     </div>
 
     <!-- Uncalibrated banner -->
@@ -53,28 +68,15 @@ function start() {
 
     <!-- Path steps — monotonically non-increasing confidence (13.4) -->
     <div v-if="isDone && isCalibrated && prediction" class="space-y-4 max-w-xl">
-      <div
+      <PredictionCard
         v-for="step in prediction.path"
         :key="step.step"
-        class="bg-white rounded-lg border border-gray-200 p-4"
-      >
-        <div class="flex items-center gap-3 mb-3">
-          <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
-            Draw +{{ step.step }}
-          </span>
-          <ConfidenceBadge :confidence="step.confidence" />
-        </div>
-        <div class="flex flex-wrap gap-1.5 mb-3">
-          <span
-            v-for="n in step.numbers"
-            :key="n"
-            class="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-800 font-bold text-xs"
-          >
-            {{ n }}
-          </span>
-        </div>
-        <p class="text-xs text-gray-500">{{ step.explanation }}</p>
-      </div>
+        :label="`Draw +${step.step}`"
+        :numbers="step.numbers"
+        :confidence="step.confidence"
+        :explanation="step.explanation"
+        :provenance="prediction.provenance"
+      />
 
       <div class="text-xs text-gray-400">
         Dataset: {{ prediction.provenance.dataset_hash.slice(0, 12) }}

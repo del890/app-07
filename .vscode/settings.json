@@ -9,6 +9,8 @@
       "matchCommandLine": true
     },
     "npm install": true,
-    "mkdir": true
+    "mkdir": true,
+    "npm run lint": true,
+    "npx eslint": true
   }
 }

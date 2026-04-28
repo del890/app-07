@@ -56,6 +56,11 @@ class Settings(BaseSettings):
     llm_monthly_spend_cap_usd: float = 50.0
     calibration_stale_after_days: int = 14
 
+    sync_interval_minutes: int = 60
+    lotofacil_api_url: str = (
+        "https://servicebus2.caixa.gov.br/portaldeloterias/api/lotofacil"
+    )
+
 
 class ConfigError(RuntimeError):
     """Raised when startup-time configuration is missing or invalid."""
