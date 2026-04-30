@@ -16,7 +16,7 @@ export function useTicketScanner() {
     permissionDenied.value = false
     try {
       stream.value = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
+        video: { facingMode: 'environment', aspectRatio: { ideal: 9 / 16 } },
       })
     } catch (err) {
       const name = err instanceof Error ? err.name : ''

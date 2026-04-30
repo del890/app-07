@@ -146,7 +146,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
       <!-- Camera preview -->
       <div
         v-if="!permissionDenied"
-        class="relative w-full max-w-sm aspect-video bg-black rounded-xl overflow-hidden"
+        class="relative w-full max-w-sm aspect-[9/16] bg-black rounded-xl overflow-hidden"
       >
         <video
           ref="videoRef"
@@ -165,7 +165,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
           <!-- Guide rectangle: portrait ~1:2.3 ratio -->
           <div
             class="relative z-10 flex flex-col items-center justify-end pb-2"
-            style="width: 52%; aspect-ratio: 1 / 2.3; border: 2px solid rgba(255,255,255,0.75); border-radius: 4px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.35);"
+            style="width: 75%; aspect-ratio: 1 / 2.3; border: 2px solid rgba(255,255,255,0.75); border-radius: 4px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.35);"
           >
             <!-- Corner markers -->
             <span class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white rounded-tl-sm" />
@@ -218,7 +218,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
 
     <!-- ── Preview view ─────────────────────────────────────────────────── -->
     <template v-else-if="view === 'preview'">
-      <div class="relative w-full max-w-sm aspect-video bg-black rounded-xl overflow-hidden">
+      <div class="relative w-full max-w-sm aspect-[9/16] bg-black rounded-xl overflow-hidden">
         <img
           :src="previewUrl ?? undefined"
           class="w-full h-full object-cover"
