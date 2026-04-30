@@ -20,7 +20,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 
-from service.ingestion import reload_from_settings
+from service.engine import run_calibration
+from service.ingestion import get_cached_history, reload_from_settings
 from service.sync.fetcher import FetchError, fetch_new_draws
 from service.sync.merger import merge_new_draws
 from service.sync.writer import WriteError, write_dataset
@@ -90,7 +91,17 @@ async def run_sync(
         # --- 5. Hot-reload ------------------------------------------------
         reload_from_settings()
 
-        # --- 6. Update state ----------------------------------------------
+        # --- 6. Re-calibrate so Play mode reflects the new draws ----------
+        _history = get_cached_history()
+        if _history is not None:
+            log.info("sync.task.calibration.begin", extra={"draws_added": draws_added})
+            try:
+                run_calibration(_history)
+                log.info("sync.task.calibration.done")
+            except Exception as cal_exc:  # noqa: BLE001
+                log.error("sync.task.calibration.error", extra={"error": str(cal_exc)})
+
+        # --- 7. Update state ----------------------------------------------
         _state.last_sync_at = datetime.now(timezone.utc)
         _state.last_sync_result = "success"
         _state.last_draws_added = draws_added

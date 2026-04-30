@@ -1,9 +1,8 @@
 <script setup lang="ts">
 const route = useRoute()
 
-const mode = computed<'research' | 'play' | 'admin'>(() => {
+const mode = computed<'research' | 'play'>(() => {
   if (route.path.startsWith('/play')) return 'play'
-  if (route.path.startsWith('/admin')) return 'admin'
   return 'research'
 })
 </script>
@@ -36,15 +35,6 @@ const mode = computed<'research' | 'play' | 'admin'>(() => {
               : 'text-gray-500 hover:bg-gray-100'"
           >
             Jogar
-          </NuxtLink>
-          <NuxtLink
-            to="/admin"
-            class="px-4 py-1.5 rounded-full text-sm font-medium transition-colors"
-            :class="mode === 'admin'
-              ? 'bg-gray-200 text-gray-800'
-              : 'text-gray-400 hover:bg-gray-100'"
-          >
-            Admin
           </NuxtLink>
         </nav>
       </div>

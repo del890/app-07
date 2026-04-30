@@ -12,6 +12,7 @@ The `/v1` surface is composed in `service.api` and mounted here.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
 import uuid
@@ -28,6 +29,7 @@ from service.api import readiness as readiness_registry
 from service.config import get_settings, require_runtime_ready
 from service.correlation import registry as signal_registry
 from service.correlation.loader import SignalLoadError
+from service.engine import run_calibration
 from service.ingestion import get_cached_history, ingest_from_settings
 from service.logging_config import configure_logging
 from service.sync.task import run_sync, sync_state
@@ -43,6 +45,15 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     require_runtime_ready(settings)
 
     ingest_from_settings(settings)
+
+    # Auto-calibrate on startup so Play mode is available without manual steps.
+    _history = get_cached_history()
+    if _history is not None:
+        startup_log.info("calibration.startup.begin")
+        await asyncio.to_thread(run_calibration, _history)
+        startup_log.info("calibration.startup.done")
+    else:
+        startup_log.warning("calibration.startup.skipped", extra={"reason": "ingestion not ready"})
 
     readiness_registry.install_default_checks()
 
