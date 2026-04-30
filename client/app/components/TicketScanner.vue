@@ -6,8 +6,8 @@ const emit = defineEmits<{
 const { stream, status, error, result, permissionDenied, startCamera, stopCamera, captureFrame, uploadImage, reset } =
   useTicketScanner()
 
-// Internal view state: 'capture' | 'loading' | 'result'
-type ViewState = 'capture' | 'loading' | 'result'
+// Internal view state: 'capture' | 'preview' | 'loading' | 'result'
+type ViewState = 'capture' | 'preview' | 'loading' | 'result'
 const view = ref<ViewState>('capture')
 
 const videoRef = ref<HTMLVideoElement | null>(null)
@@ -15,6 +15,10 @@ const fileInputRef = ref<HTMLInputElement | null>(null)
 
 // Editable copy of the scanned games (for the result view)
 const editableGames = ref<number[][]>([])
+
+// Preview state (between capture and upload)
+const capturedBlob = ref<Blob | null>(null)
+const previewUrl = ref<string | null>(null)
 
 onMounted(async () => {
   await startCamera()
@@ -51,8 +55,38 @@ async function handleCapture(): Promise<void> {
   const blob = await captureFrame(videoRef.value)
   if (!blob) return
   stopCamera()
+  capturedBlob.value = blob
+  previewUrl.value = URL.createObjectURL(blob)
+  view.value = 'preview'
+}
+
+// ── Preview ────────────────────────────────────────────────────────────────
+
+function revokePreviewUrl(): void {
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+    previewUrl.value = null
+  }
+}
+
+async function handleConfirmPreview(): Promise<void> {
+  const blob = capturedBlob.value
+  if (!blob) return
+  revokePreviewUrl()
+  capturedBlob.value = null
   await uploadImage(blob)
 }
+
+async function handleRetakeFromPreview(): Promise<void> {
+  revokePreviewUrl()
+  capturedBlob.value = null
+  view.value = 'capture'
+  await startCamera()
+}
+
+onBeforeUnmount(() => {
+  revokePreviewUrl()
+})
 
 // ── File fallback ──────────────────────────────────────────────────────────
 
@@ -179,6 +213,36 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
             @change="handleFileInput"
           >
         </label>
+      </div>
+    </template>
+
+    <!-- ── Preview view ─────────────────────────────────────────────────── -->
+    <template v-else-if="view === 'preview'">
+      <div class="relative w-full max-w-sm aspect-video bg-black rounded-xl overflow-hidden">
+        <img
+          :src="previewUrl ?? undefined"
+          class="w-full h-full object-cover"
+          alt="Captured ticket"
+        >
+      </div>
+      <p class="text-sm text-gray-500 text-center">
+        Does the ticket look clear and fully visible?
+      </p>
+      <div class="flex gap-3 w-full max-w-sm">
+        <button
+          type="button"
+          class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+          @click="handleRetakeFromPreview"
+        >
+          Retake
+        </button>
+        <button
+          type="button"
+          class="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+          @click="handleConfirmPreview"
+        >
+          Confirm
+        </button>
       </div>
     </template>
 
