@@ -146,7 +146,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
       <!-- Camera preview -->
       <div
         v-if="!permissionDenied"
-        class="relative w-full max-w-sm aspect-[9/16] bg-black rounded-xl overflow-hidden"
+        class="relative w-full max-w-sm mx-auto aspect-[9/16] max-h-[55vh] bg-black rounded-xl overflow-hidden"
       >
         <video
           ref="videoRef"
@@ -189,7 +189,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
       <button
         v-if="!permissionDenied"
         type="button"
-        class="px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
+        class="w-full max-w-sm py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
         @click="handleCapture"
       >
         Capture
@@ -218,7 +218,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
 
     <!-- ── Preview view ─────────────────────────────────────────────────── -->
     <template v-else-if="view === 'preview'">
-      <div class="relative w-full max-w-sm aspect-[9/16] bg-black rounded-xl overflow-hidden">
+      <div class="relative w-full max-w-sm mx-auto aspect-[9/16] max-h-[55vh] bg-black rounded-xl overflow-hidden">
         <img
           :src="previewUrl ?? undefined"
           class="w-full h-full object-cover"
@@ -286,7 +286,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
             :key="n"
             type="button"
             :class="[
-              'h-10 w-full rounded-lg text-sm font-medium transition-colors',
+              'h-9 sm:h-10 w-full rounded-lg text-xs sm:text-sm font-medium transition-colors',
               isMarked(gIdx, n)
                 ? 'bg-purple-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200',

@@ -36,7 +36,7 @@ async function handleConfirm(numbers: number[]): Promise<void> {
       <div class="flex gap-2">
         <!-- Card 1: Correct -->
         <div class="flex-1 flex flex-col items-center gap-1.5 bg-green-50 border border-green-200 rounded-xl p-2">
-          <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-14 h-[4.5rem]">
+          <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
             <!-- Camera frame -->
             <rect x="2" y="2" width="56" height="68" rx="3" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
             <!-- Ticket rect (nicely centred) -->
@@ -55,7 +55,7 @@ async function handleConfirm(numbers: number[]): Promise<void> {
 
         <!-- Card 2: Steep angle -->
         <div class="flex-1 flex flex-col items-center gap-1.5 bg-red-50 border border-red-200 rounded-xl p-2">
-          <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-14 h-[4.5rem]">
+          <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
             <!-- Camera frame -->
             <rect x="2" y="2" width="56" height="68" rx="3" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
             <!-- Skewed ticket (parallelogram) -->
@@ -73,7 +73,7 @@ async function handleConfirm(numbers: number[]): Promise<void> {
 
         <!-- Card 3: Obstruction -->
         <div class="flex-1 flex flex-col items-center gap-1.5 bg-red-50 border border-red-200 rounded-xl p-2">
-          <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-14 h-[4.5rem]">
+          <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
             <!-- Camera frame -->
             <rect x="2" y="2" width="56" height="68" rx="3" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
             <!-- Ticket -->
