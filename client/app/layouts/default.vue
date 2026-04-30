@@ -26,7 +26,7 @@ const mode = computed<'research' | 'play' | 'admin'>(() => {
               ? 'bg-blue-100 text-blue-800'
               : 'text-gray-500 hover:bg-gray-100'"
           >
-            Research
+            Pesquisa
           </NuxtLink>
           <NuxtLink
             to="/play"
@@ -35,7 +35,7 @@ const mode = computed<'research' | 'play' | 'admin'>(() => {
               ? 'bg-purple-100 text-purple-800'
               : 'text-gray-500 hover:bg-gray-100'"
           >
-            Play
+            Jogar
           </NuxtLink>
           <NuxtLink
             to="/admin"
@@ -50,10 +50,10 @@ const mode = computed<'research' | 'play' | 'admin'>(() => {
       </div>
     </header>
 
-    <!-- Research / entertainment disclaimer (always visible) -->
+    <!-- Aviso de pesquisa / entretenimento (sempre visível) -->
     <div class="bg-amber-50 border-b border-amber-200 px-4 py-2 text-center text-xs text-amber-800">
-      For research and entertainment purposes only. Statistical analysis does not predict future
-      lottery results. Play responsibly.
+      Apenas para fins de pesquisa e entretenimento. Análise estatística não prevê resultados
+      futuros da loteria. Jogue com responsabilidade.
     </div>
 
     <!-- Main content -->
@@ -61,9 +61,9 @@ const mode = computed<'research' | 'play' | 'admin'>(() => {
       <slot />
     </main>
 
-    <!-- Footer -->
+    <!-- Rodapé -->
     <footer class="border-t border-gray-200 bg-white py-4 text-center text-xs text-gray-400">
-      Lotofácil Research Tool — not affiliated with Caixa Econômica Federal.
+      Ferramenta de Pesquisa Lotofácil — não é afiliada à Caixa Econômica Federal.
     </footer>
   </div>
 </template>

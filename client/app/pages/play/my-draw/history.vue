@@ -28,7 +28,7 @@ async function handleDelete(id: number): Promise<void> {
 }
 
 async function handleClearAll(): Promise<void> {
-  if (!window.confirm('Delete all saved analyses? This cannot be undone.')) return
+  if (!window.confirm('Apagar todas as análises? Esta ação não pode ser desfeita.')) return
   await clearEntries()
   entries.value = []
 }
@@ -42,24 +42,24 @@ function handleLoad(entry: MyDrawEntry): void {
 <template>
   <div>
     <div class="flex items-center justify-between mb-4">
-      <NuxtLink to="/play/my-draw" class="text-sm text-blue-600 hover:underline">← My Draw</NuxtLink>
+      <NuxtLink to="/play/my-draw" class="text-sm text-blue-600 hover:underline">← Meu Volante</NuxtLink>
       <button
         v-if="entries.length"
         type="button"
         class="text-xs text-red-400 hover:text-red-600"
         @click="handleClearAll"
       >
-        Clear all
+        Limpar tudo
       </button>
     </div>
 
-    <h1 class="text-2xl font-bold mb-6">My Draw History</h1>
+    <h1 class="text-2xl font-bold mb-6">Histórico do Meu Volante</h1>
 
     <!-- Empty state -->
     <div v-if="!entries.length" class="text-center py-16">
-      <p class="text-gray-400 mb-4">No analyses saved yet.</p>
+      <p class="text-gray-400 mb-4">Nenhuma análise salva.</p>
       <NuxtLink to="/play/my-draw" class="text-sm text-purple-600 hover:underline">
-        Analyse a draw →
+        Analisar um sorteio →
       </NuxtLink>
     </div>
 
@@ -90,14 +90,14 @@ function handleLoad(entry: MyDrawEntry): void {
               class="text-xs text-purple-600 hover:text-purple-800 font-medium"
               @click="handleLoad(entry)"
             >
-              Load
+              Carregar
             </button>
             <button
               type="button"
               class="text-xs text-red-400 hover:text-red-600"
               @click="handleDelete(entry.id!)"
             >
-              Delete
+              Excluir
             </button>
           </div>
         </div>

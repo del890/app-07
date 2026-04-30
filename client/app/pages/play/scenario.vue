@@ -17,12 +17,12 @@ function start() {
 
 <template>
   <div>
-    <NuxtLink to="/play" class="text-sm text-blue-600 hover:underline mb-4 block">← Play</NuxtLink>
-    <h1 class="text-2xl font-bold mb-6">Scenario Path</h1>
+    <NuxtLink to="/play" class="text-sm text-blue-600 hover:underline mb-4 block">← Jogar</NuxtLink>
+    <h1 class="text-2xl font-bold mb-6">Caminho de Cenário</h1>
 
     <div class="flex items-center gap-4 mb-6">
       <label class="flex items-center gap-2 text-sm">
-        Horizon (draws ahead)
+        Horizonte (sorteios à frente)
         <input
           v-model.number="horizon"
           type="number"
@@ -46,7 +46,7 @@ function start() {
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
-        {{ isStreaming ? 'Generating…' : 'Generate Scenario' }}
+        {{ isStreaming ? 'Gerando…' : 'Gerar Cenário' }}
       </button>
     </div>
 
@@ -57,12 +57,12 @@ function start() {
 
     <!-- Uncalibrated banner -->
     <div v-if="isDone && !isCalibrated" class="bg-amber-50 border border-amber-300 rounded-lg p-5 max-w-xl">
-      <h2 class="font-semibold text-amber-800 mb-1">Calibration Required</h2>
+      <h2 class="font-semibold text-amber-800 mb-1">Calibração Necessária</h2>
       <p class="text-sm text-amber-700">
-        The prediction engine is not calibrated. Scenario paths cannot be shown.
+        O motor de previsão não está calibrado. Caminhos de cenário não podem ser exibidos.
       </p>
       <NuxtLink to="/research" class="mt-3 inline-block text-sm text-blue-600 hover:underline">
-        Explore research data instead →
+        Explorar dados de pesquisa →
       </NuxtLink>
     </div>
 
@@ -79,7 +79,7 @@ function start() {
       />
 
       <div class="text-xs text-gray-400">
-        Dataset: {{ prediction.provenance.dataset_hash.slice(0, 12) }}
+        Conjunto de dados: {{ prediction.provenance.dataset_hash.slice(0, 12) }}
         · {{ prediction.provenance.computed_at }}
       </div>
     </div>
@@ -89,7 +89,7 @@ function start() {
     <!-- History link shown after a prediction is saved -->
     <div v-if="isDone && isCalibrated && prediction" class="mt-4">
       <NuxtLink to="/play/history" class="text-sm text-gray-500 hover:text-gray-700 hover:underline">
-        View saved predictions →
+        Ver previsões salvas →
       </NuxtLink>
     </div>
   </div>

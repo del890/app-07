@@ -70,18 +70,17 @@ function formatDate(iso: string): string {
 <template>
   <div>
     <div class="flex items-center justify-between mb-4">
-      <NuxtLink to="/play" class="text-sm text-blue-600 hover:underline">← Play</NuxtLink>
+      <NuxtLink to="/play" class="text-sm text-blue-600 hover:underline">← Jogar</NuxtLink>
       <NuxtLink
         to="/play/my-draw/history"
         class="text-sm text-gray-500 hover:text-gray-700 hover:underline"
       >
-        View history →
+        Ver histórico →
       </NuxtLink>
     </div>
-    <h1 class="text-2xl font-bold mb-2">My Draw</h1>
+    <h1 class="text-2xl font-bold mb-2">Meu Volante</h1>
     <p class="text-sm text-gray-500 mb-4">
-      Select 15 numbers to see statistical insights and check if this combination has appeared
-      before.
+      Selecione 15 números para ver insights estatísticos e verificar se essa combinação já apareceu antes.
     </p>
 
     <!-- Import from scan shortcut -->
@@ -94,7 +93,7 @@ function formatDate(iso: string): string {
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
-        Import from scan
+        Importar do escaneamento
       </NuxtLink>
     </div>
 
@@ -110,7 +109,7 @@ function formatDate(iso: string): string {
       :disabled="!isReady || loading"
       @click="submit"
     >
-      {{ loading ? 'Analysing…' : 'Analyse Selection' }}
+      {{ loading ? 'Analisando…' : 'Analisar Seleção' }}
     </button>
 
     <!-- Error -->
@@ -124,17 +123,17 @@ function formatDate(iso: string): string {
         class="bg-amber-50 border border-amber-300 rounded-lg px-5 py-4"
       >
         <p class="text-sm font-semibold text-amber-800">
-          This draw was played on {{ profile.dataset_match.date }} (draw
+          Este sorteio foi realizado em {{ profile.dataset_match.date }} (sorteio
           #{{ profile.dataset_match.original_id }}).
         </p>
       </div>
       <div v-else class="bg-green-50 border border-green-200 rounded-lg px-5 py-4">
-        <p class="text-sm text-green-800">This combination has not been drawn before.</p>
+        <p class="text-sm text-green-800">Esta combinação nunca foi sorteada antes.</p>
       </div>
 
       <!-- Numbers with frequency indicators -->
       <div class="bg-white border border-gray-200 rounded-lg p-5">
-        <h2 class="font-semibold text-gray-800 mb-4">Number Frequencies</h2>
+        <h2 class="font-semibold text-gray-800 mb-4">Frequências por Número</h2>
         <div class="grid grid-cols-5 gap-3">
           <div
             v-for="n in profile.numbers.slice().sort((a, b) => a - b)"
@@ -149,14 +148,14 @@ function formatDate(iso: string): string {
             <span
               v-if="profileByNumber.get(n)"
               class="text-xs text-gray-500"
-              :title="`Drawn ${profileByNumber.get(n)!.historical_count} times`"
+              :title="`Sorteado ${profileByNumber.get(n)!.historical_count} vezes`"
             >
               {{ profileByNumber.get(n)!.historical_count }}×
             </span>
             <span
               v-if="profileByNumber.get(n)"
               class="text-xs text-gray-400"
-              :title="`Frequency rank`"
+              :title="`Posição de frequência`"
             >
               #{{ profileByNumber.get(n)!.frequency_rank }}
             </span>
@@ -166,12 +165,12 @@ function formatDate(iso: string): string {
 
       <!-- Top co-occurring pairs -->
       <div v-if="top5Pairs.length" class="bg-white border border-gray-200 rounded-lg p-5">
-        <h2 class="font-semibold text-gray-800 mb-4">Top Co-occurring Pairs</h2>
+        <h2 class="font-semibold text-gray-800 mb-4">Pares com Maior Co-ocorrência</h2>
         <table class="w-full text-sm">
           <thead>
             <tr class="text-left text-gray-500 border-b border-gray-100">
-              <th class="pb-2 font-medium">Pair</th>
-              <th class="pb-2 font-medium text-right">Times together</th>
+              <th class="pb-2 font-medium">Par</th>
+              <th class="pb-2 font-medium text-right">Vezes juntos</th>
             </tr>
           </thead>
           <tbody>
@@ -189,30 +188,30 @@ function formatDate(iso: string): string {
 
       <!-- Structural summary -->
       <div class="bg-white border border-gray-200 rounded-lg p-5">
-        <h2 class="font-semibold text-gray-800 mb-4">Structural Profile</h2>
+        <h2 class="font-semibold text-gray-800 mb-4">Perfil Estrutural</h2>
         <dl class="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
           <div>
-            <dt class="text-gray-500">Sum</dt>
+            <dt class="text-gray-500">Soma</dt>
             <dd class="font-semibold text-gray-800">{{ profile.structural.total_sum }}</dd>
           </div>
           <div>
-            <dt class="text-gray-500">Range</dt>
+            <dt class="text-gray-500">Intervalo</dt>
             <dd class="font-semibold text-gray-800">
-              {{ profile.structural.min_number }}–{{ profile.structural.max_number }} (span
+              {{ profile.structural.min_number }}–{{ profile.structural.max_number }} (amplitude
               {{ profile.structural.range_span }})
             </dd>
           </div>
           <div>
-            <dt class="text-gray-500">Even / Odd</dt>
+            <dt class="text-gray-500">Par / Ímpar</dt>
             <dd class="font-semibold text-gray-800">
-              {{ profile.structural.even_count }} even · {{ profile.structural.odd_count }} odd
+              {{ profile.structural.even_count }} pares · {{ profile.structural.odd_count }} ímpares
             </dd>
           </div>
         </dl>
 
         <!-- Quintile distribution -->
         <div class="mt-4">
-          <p class="text-xs text-gray-500 mb-2">Quintile distribution</p>
+          <p class="text-xs text-gray-500 mb-2">Distribuição por quintil</p>
           <div class="flex gap-2">
             <div
               v-for="(count, idx) in profile.structural.quintile_counts"
@@ -236,7 +235,7 @@ function formatDate(iso: string): string {
     <!-- Recent analyses panel -->
     <div v-if="storeAvailable && recentEntries.length" class="mt-10 max-w-xl">
       <h2 class="font-semibold text-gray-700 mb-3 text-sm uppercase tracking-wide">
-        Recent analyses
+        Análises recentes
       </h2>
       <div class="space-y-2">
         <div
@@ -255,7 +254,7 @@ function formatDate(iso: string): string {
             class="text-xs text-purple-600 hover:text-purple-800 font-medium ml-4 shrink-0"
             @click="loadEntry(entry)"
           >
-            Load
+            Carregar
           </button>
         </div>
       </div>
@@ -263,7 +262,7 @@ function formatDate(iso: string): string {
         to="/play/my-draw/history"
         class="mt-3 inline-block text-xs text-gray-400 hover:text-gray-600 hover:underline"
       >
-        View full history →
+        Ver histórico completo →
       </NuxtLink>
     </div>
   </div>

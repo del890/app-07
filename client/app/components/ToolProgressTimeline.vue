@@ -7,16 +7,16 @@ const props = defineProps<{
 
 // ── Tool name humanisation map ────────────────────────────────────────────
 const TOOL_LABELS: Record<string, string> = {
-  fetch_frequency_statistics: 'Frequency statistics',
-  fetch_gap_analysis: 'Gap analysis',
-  fetch_cooccurrence_statistics: 'Co-occurrence statistics',
-  fetch_structural_statistics: 'Structural statistics',
-  fetch_correlation_signals: 'Correlation signals',
-  fetch_prediction_history: 'Recent predictions',
-  fetch_dataset_provenance: 'Dataset provenance',
-  fetch_draws: 'Historical draws',
-  run_calibration_check: 'Calibration check',
-  compute_draw_profile: 'Draw profile',
+  fetch_frequency_statistics: 'Estatísticas de frequência',
+  fetch_gap_analysis: 'Análise de intervalos',
+  fetch_cooccurrence_statistics: 'Estatísticas de co-ocorrência',
+  fetch_structural_statistics: 'Estatísticas estruturais',
+  fetch_correlation_signals: 'Sinais de correlação',
+  fetch_prediction_history: 'Previsões recentes',
+  fetch_dataset_provenance: 'Provenênça do conjunto de dados',
+  fetch_draws: 'Sorteios históricos',
+  run_calibration_check: 'Verificação de calibração',
+  compute_draw_profile: 'Perfil de sorteio',
 }
 
 function humanise(toolName: string): string {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Admin — Lotofácil Research' })
+useHead({ title: 'Admin — Pesquisa Lotofácil' })
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -46,7 +46,7 @@ const calibrationError = ref<string | null>(null)
 const calibrationDone = ref(false)
 
 // Simulated progress phases while the sync endpoint runs
-const progressPhases = ['Preparing dataset…', 'Training model…', 'Calibrating scores…', 'Evaluating hold-out…', 'Finalising…']
+const progressPhases = ['Preparando conjunto de dados…', 'Treinando modelo…', 'Calibrando pontuações…', 'Avaliando hold-out…', 'Finalizando…']
 const currentPhase = ref('')
 const progressPct = ref(0)
 let phaseTimer: ReturnType<typeof setInterval> | null = null
@@ -69,7 +69,7 @@ function stopProgressSimulation() {
     phaseTimer = null
   }
   progressPct.value = 100
-  currentPhase.value = 'Complete'
+  currentPhase.value = 'Concluído'
 }
 
 // ── API helpers ───────────────────────────────────────────────────────────────
@@ -81,7 +81,7 @@ async function fetchReadiness() {
     const data = await $fetch<ReadinessResponse>(`${apiBase}/v1/ready`)
     readiness.value = data
   } catch (err: unknown) {
-    readinessError.value = err instanceof Error ? err.message : 'Failed to reach service'
+    readinessError.value = err instanceof Error ? err.message : 'Falha ao conectar ao serviço'
   } finally {
     loadingReadiness.value = false
   }
@@ -108,7 +108,7 @@ async function runCalibration() {
     // Refresh readiness after calibration
     await fetchReadiness()
   } catch (err: unknown) {
-    calibrationError.value = err instanceof Error ? err.message : 'Calibration failed'
+    calibrationError.value = err instanceof Error ? err.message : 'Calibração falhou'
   } finally {
     stopProgressSimulation()
     calibrating.value = false
@@ -124,28 +124,28 @@ onMounted(async () => {
 
 <template>
   <div class="max-w-2xl mx-auto space-y-6">
-    <h1 class="text-2xl font-bold">Admin / Setup</h1>
+    <h1 class="text-2xl font-bold">Admin / Configuração</h1>
     <p class="text-gray-500 text-sm">
-      Manual operations required before the Play mode is fully functional.
+      Operações manuais necessárias antes do modo Jogar estar totalmente funcional.
     </p>
 
     <!-- ── Service Readiness ──────────────────────────────────────────────── -->
     <section class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
       <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-        <h2 class="font-semibold text-gray-800">Service Readiness</h2>
+        <h2 class="font-semibold text-gray-800">Disponibilidade do Serviço</h2>
         <button
           class="text-xs text-blue-600 hover:underline disabled:opacity-50"
           :disabled="loadingReadiness"
           @click="fetchReadiness"
         >
-          {{ loadingReadiness ? 'Refreshing…' : 'Refresh' }}
+          {{ loadingReadiness ? 'Atualizando…' : 'Atualizar' }}
         </button>
       </div>
 
       <div class="px-5 py-4">
         <div v-if="readinessError" class="text-red-600 text-sm">{{ readinessError }}</div>
 
-        <div v-else-if="!readiness" class="text-gray-400 text-sm animate-pulse">Loading…</div>
+        <div v-else-if="!readiness" class="text-gray-400 text-sm animate-pulse">Carregando…</div>
 
         <div v-else class="space-y-2">
           <!-- Overall badge -->
@@ -155,7 +155,7 @@ onMounted(async () => {
               :class="readiness.ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'"
             >
               <span class="w-2 h-2 rounded-full" :class="readiness.ok ? 'bg-green-500' : 'bg-red-500'" />
-              {{ readiness.ok ? 'All systems ready' : 'Not ready' }}
+              {{ readiness.ok ? 'Todos os sistemas prontos' : 'Não pronto' }}
             </span>
             <span class="text-xs text-gray-400">v{{ readiness.version }}</span>
           </div>
@@ -174,7 +174,7 @@ onMounted(async () => {
             <div class="min-w-0">
               <p class="text-sm font-medium capitalize text-gray-800">
                 {{ check.name }}
-                <span v-if="check.required" class="ml-1 text-xs text-gray-400">(required)</span>
+                <span v-if="check.required" class="ml-1 text-xs text-gray-400">(obrigatório)</span>
               </p>
               <p class="text-xs text-gray-500 truncate">{{ check.detail }}</p>
             </div>
@@ -186,9 +186,9 @@ onMounted(async () => {
     <!-- ── Calibration ────────────────────────────────────────────────────── -->
     <section class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
       <div class="px-5 py-4 border-b border-gray-100">
-        <h2 class="font-semibold text-gray-800">Prediction Engine Calibration</h2>
+        <h2 class="font-semibold text-gray-800">Calibração do Motor de Previsão</h2>
         <p class="text-xs text-gray-500 mt-0.5">
-          Must run at least once before Play mode is available. Re-run whenever the dataset changes or after 14 days.
+          Deve ser executado pelo menos uma vez antes do modo Jogar estar disponível. Reexecute sempre que o conjunto de dados mudar ou após 14 dias.
         </p>
       </div>
 
@@ -197,20 +197,20 @@ onMounted(async () => {
         <!-- Current status -->
         <div v-if="calibrationStatus" class="flex flex-wrap gap-4 text-sm">
           <div>
-            <p class="text-xs text-gray-400 uppercase tracking-wide">Status</p>
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Estado</p>
             <span
               class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium mt-1"
               :class="calibrationStatus.ok ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'"
             >
-              {{ calibrationStatus.ok ? 'Fresh' : 'Stale / not run' }}
+              {{ calibrationStatus.ok ? 'Atualizado' : 'Desatualizado / não executado' }}
             </span>
           </div>
           <div v-if="calibrationStatus.last_calibrated_at">
-            <p class="text-xs text-gray-400 uppercase tracking-wide">Last run</p>
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Última execução</p>
             <p class="mt-1 text-gray-700">{{ new Date(calibrationStatus.last_calibrated_at).toLocaleString() }}</p>
           </div>
           <div v-if="calibrationStatus.eval_metrics?.n_eval_rows">
-            <p class="text-xs text-gray-400 uppercase tracking-wide">Eval rows</p>
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Linhas de avaliação</p>
             <p class="mt-1 text-gray-700">{{ calibrationStatus.eval_metrics.n_eval_rows }}</p>
           </div>
         </div>
@@ -221,7 +221,7 @@ onMounted(async () => {
           class="grid grid-cols-2 gap-3 text-sm"
         >
           <div class="bg-gray-50 rounded-lg px-4 py-3">
-            <p class="text-xs text-gray-400">Brier score (raw → calibrated)</p>
+            <p class="text-xs text-gray-400">Brier score (bruto → calibrado)</p>
             <p class="font-mono font-medium text-gray-800 mt-1">
               {{ calibrationStatus!.eval_metrics!.brier_score_raw!.toFixed(4) }}
               →
@@ -229,7 +229,7 @@ onMounted(async () => {
             </p>
           </div>
           <div class="bg-gray-50 rounded-lg px-4 py-3">
-            <p class="text-xs text-gray-400">Log loss (raw → calibrated)</p>
+            <p class="text-xs text-gray-400">Log loss (bruto → calibrado)</p>
             <p class="font-mono font-medium text-gray-800 mt-1">
               {{ calibrationStatus!.eval_metrics!.log_loss_raw!.toFixed(4) }}
               →
@@ -254,7 +254,7 @@ onMounted(async () => {
 
         <!-- Success banner -->
         <div v-if="calibrationDone && !calibrating" class="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-2">
-          <span>✓</span> Calibration complete — Play mode is now available.
+          <span>✓</span> Calibração concluída — Modo Jogar agora está disponível.
         </div>
 
         <!-- Error -->
@@ -271,7 +271,7 @@ onMounted(async () => {
           :disabled="calibrating"
           @click="runCalibration"
         >
-          {{ calibrating ? 'Running…' : (calibrationStatus?.ok ? 'Re-run Calibration' : 'Run Calibration Now') }}
+          {{ calibrating ? 'Executando…' : (calibrationStatus?.ok ? 'Reexecutar Calibração' : 'Executar Calibração Agora') }}
         </button>
       </div>
     </section>
@@ -283,12 +283,12 @@ onMounted(async () => {
       </div>
       <div class="px-5 py-4 space-y-1 text-sm text-gray-600">
         <p>
-          The dataset is read from <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">data.json</code> at the repository root.
-          It is immutable — the service never writes to it.
+          O conjunto de dados é lido de <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">data.json</code> na raiz do repositório.
+          É imutável — o serviço nunca escreve nele.
         </p>
         <p>
-          To update the dataset, replace <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">data.json</code> and restart the service,
-          then re-run calibration above.
+          Para atualizar o conjunto de dados, substitua <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">data.json</code> e reinicie o serviço,
+          em seguida reexecute a calibração acima.
         </p>
         <div v-if="readiness" class="mt-3">
           <template v-for="check in readiness.checks" :key="check.name">

@@ -33,7 +33,7 @@ function clearAll(): void {
     <!-- Counter and clear button -->
     <div class="flex items-center justify-between mb-3">
       <span class="text-sm font-medium" :class="isValid ? 'text-green-600' : 'text-gray-600'">
-        {{ count }} / 15 selected
+        {{ count }} / 15 selecionados
       </span>
       <button
         type="button"
@@ -41,7 +41,7 @@ function clearAll(): void {
         :disabled="count === 0"
         @click="clearAll"
       >
-        Clear all
+        Limpar tudo
       </button>
     </div>
 
@@ -61,7 +61,7 @@ function clearAll(): void {
         "
         :disabled="isFull && !selected.has(n)"
         :aria-pressed="selected.has(n)"
-        :aria-label="`Number ${n}`"
+        :aria-label="`Número ${n}`"
         @click="toggle(n)"
       >
         {{ n }}

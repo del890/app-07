@@ -175,7 +175,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
           </div>
           <!-- Label below the guide -->
           <p class="relative z-10 mt-2 text-xs text-white/80 font-medium tracking-wide">
-            Align ticket within the guide
+            Alinhe o volante dentro do guia
           </p>
         </div>
       </div>
@@ -192,18 +192,18 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
         class="w-full max-w-sm py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
         @click="handleCapture"
       >
-        Capture
+        Capturar
       </button>
 
       <!-- File picker fallback -->
       <div v-if="permissionDenied" class="flex flex-col items-center gap-3 w-full max-w-sm">
         <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 text-center">
-          Camera access was denied. You can upload a photo of the ticket instead.
+          Acesso à câmera negado. Você pode enviar uma foto do volante.
         </p>
         <label
           class="cursor-pointer px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
         >
-          Choose photo
+          Escolher foto
           <input
             ref="fileInputRef"
             type="file"
@@ -222,11 +222,11 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
         <img
           :src="previewUrl ?? undefined"
           class="w-full h-full object-cover"
-          alt="Captured ticket"
+          alt="Volante capturado"
         >
       </div>
       <p class="text-sm text-gray-500 text-center">
-        Does the ticket look clear and fully visible?
+        O volante está nítido e totalmente visível?
       </p>
       <div class="flex gap-3 w-full max-w-sm">
         <button
@@ -234,14 +234,14 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
           class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
           @click="handleRetakeFromPreview"
         >
-          Retake
+          Tirar novamente
         </button>
         <button
           type="button"
           class="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
           @click="handleConfirmPreview"
         >
-          Confirm
+          Confirmar
         </button>
       </div>
     </template>
@@ -262,14 +262,14 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
           />
         </svg>
-        <p class="text-gray-600 font-medium">Analysing ticket…</p>
+        <p class="text-gray-600 font-medium">Analisando volante…</p>
       </div>
     </template>
 
     <!-- ── Result view ───────────────────────────────────────────────────── -->
     <template v-else-if="view === 'result'">
       <p class="text-sm text-gray-500 text-center">
-        Review the detected numbers. Tap any cell to toggle it on/off.
+        Revise os números detectados. Toque em qualquer célula para marcar/desmarcar.
       </p>
 
       <div
@@ -278,7 +278,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
         class="w-full max-w-sm bg-white border border-gray-200 rounded-xl p-4"
       >
         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
-          Game {{ gIdx + 1 }}
+          Jogo {{ gIdx + 1 }}
         </p>
         <div class="grid grid-cols-5 gap-1.5">
           <button
@@ -297,7 +297,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
           </button>
         </div>
         <p class="mt-2 text-xs text-gray-400 text-right">
-          {{ game.length }} marked
+          {{ game.length }} marcados
         </p>
       </div>
 
@@ -307,14 +307,14 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
           class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
           @click="handleDiscard"
         >
-          Discard
+          Descartar
         </button>
         <button
           type="button"
           class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
           @click="handleRetake"
         >
-          Retake
+          Tirar novamente
         </button>
         <button
           type="button"
@@ -322,7 +322,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
           :disabled="!editableGames[0]?.length"
           @click="handleSave"
         >
-          Save
+          Salvar
         </button>
       </div>
     </template>

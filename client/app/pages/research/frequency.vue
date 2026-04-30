@@ -43,7 +43,7 @@ const chartData = computed(() => {
     labels: sorted.map((f) => String(f.number)),
     datasets: [
       {
-        label: 'Count',
+        label: 'Contagem',
         data: sorted.map((f) => f.count),
         backgroundColor: 'rgba(59,130,246,0.6)',
         borderColor: 'rgba(59,130,246,1)',
@@ -62,12 +62,12 @@ const chartOptions = {
 
 <template>
   <div>
-    <NuxtLink to="/research" class="text-sm text-blue-600 hover:underline mb-4 block">← Research</NuxtLink>
-    <h1 class="text-2xl font-bold mb-1">Number Frequency</h1>
+    <NuxtLink to="/research" class="text-sm text-blue-600 hover:underline mb-4 block">← Pesquisa</NuxtLink>
+    <h1 class="text-2xl font-bold mb-1">Frequência por Número</h1>
     <p class="text-xs text-gray-400 mb-4">
-      Dataset: {{ provenance?.content_hash?.slice(0, 12) }}
-      · Window: {{ data?.meta.window ?? '—' }}
-      · {{ data?.meta.window_size ?? 0 }} draws
+      Conjunto de dados: {{ provenance?.content_hash?.slice(0, 12) }}
+      · Janela: {{ data?.meta.window ?? '—' }}
+      · {{ data?.meta.window_size ?? 0 }} sorteios
     </p>
 
     <!-- Window selector -->
@@ -76,22 +76,22 @@ const chartOptions = {
         v-model="windowInput"
         type="number"
         min="1"
-        placeholder="Rolling window (draws)"
+        placeholder="Janela deslizante (sorteios)"
         class="border rounded px-3 py-1.5 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
         @keydown.enter="applyWindow"
       />
       <button
         class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
         @click="applyWindow"
-      >Apply</button>
+      >Aplicar</button>
       <button
         v-if="windowSize"
         class="px-3 py-1.5 bg-gray-200 text-sm rounded hover:bg-gray-300"
         @click="clearWindow"
-      >Full history</button>
+      >Histórico completo</button>
     </div>
 
-    <div v-if="pending" class="text-gray-400 py-8 text-center">Loading…</div>
+    <div v-if="pending" class="text-gray-400 py-8 text-center">Carregando…</div>
     <div v-else-if="error" class="text-red-600 py-4">{{ error.message }}</div>
     <template v-else-if="data && chartData">
       <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
@@ -104,8 +104,8 @@ const chartOptions = {
           <thead class="bg-gray-50 border-b border-gray-200">
             <tr>
               <th class="px-4 py-2 text-left font-medium">#</th>
-              <th class="px-4 py-2 text-right font-medium">Count</th>
-              <th class="px-4 py-2 text-right font-medium">Share</th>
+              <th class="px-4 py-2 text-right font-medium">Contagem</th>
+              <th class="px-4 py-2 text-right font-medium">Participação</th>
             </tr>
           </thead>
           <tbody>

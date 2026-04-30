@@ -25,7 +25,7 @@ const barWidth = computed(() => `${Math.round(props.confidence * 100)}%`)
       <h2 v-if="label" class="text-sm font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
         {{ label }}
       </h2>
-      <h2 v-else class="font-semibold text-lg">Suggested Numbers</h2>
+      <h2 v-else class="font-semibold text-lg">Números Sugeridos</h2>
       <ConfidenceBadge :confidence="confidence" />
     </div>
 
@@ -50,7 +50,7 @@ const barWidth = computed(() => `${Math.round(props.confidence * 100)}%`)
     <!-- Confidence meter -->
     <div class="mb-4">
       <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
-        <span>Confidence</span>
+        <span>Confiança</span>
         <span>{{ Math.round(confidence * 100) }}%</span>
       </div>
       <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -69,7 +69,7 @@ const barWidth = computed(() => `${Math.round(props.confidence * 100)}%`)
 
     <!-- Provenance footer (only for top-level cards, not labelled step cards) -->
     <div v-if="!label" class="text-xs text-gray-400 border-t pt-3">
-      Dataset: {{ provenance.dataset_hash.slice(0, 12) }}
+      Conjunto de dados: {{ provenance.dataset_hash.slice(0, 12) }}
       · {{ provenance.computed_at }}
     </div>
   </div>

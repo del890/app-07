@@ -27,8 +27,8 @@ const colorClass = computed(() => {
     v-if="isValid"
     class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-sm font-semibold border"
     :class="colorClass"
-    :title="`Confidence: ${percentage}%`"
-    aria-label="Confidence score"
+    :title="`Confiança: ${percentage}%`"
+    aria-label="Índice de confiança"
   >
     {{ percentage }}%
   </span>

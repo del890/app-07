@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Scan ticket – Lotofácil' })
+useHead({ title: 'Escanear Volante — Lotofácil' })
 
 const router = useRouter()
 
@@ -18,20 +18,20 @@ async function handleConfirm(numbers: number[]): Promise<void> {
   <div>
     <div class="flex items-center justify-between mb-4">
       <NuxtLink to="/play/my-draw" class="text-sm text-blue-600 hover:underline">
-        ← My Draw
+        ← Meu Volante
       </NuxtLink>
     </div>
 
-    <h1 class="text-2xl font-bold mb-1">Scan Ticket</h1>
+    <h1 class="text-2xl font-bold mb-1">Escanear Volante</h1>
     <p class="text-sm text-gray-500 mb-4">
-      Point your camera at a filled Lotofácil ticket. The app will read the marked numbers
-      automatically.
+      Aponte a câmera para um volante da Lotofácil preenchido. O app lerá os números marcados
+      automaticamente.
     </p>
 
     <!-- Positioning guide -->
     <div class="w-full mb-5">
       <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-        How to position the ticket
+        Como posicionar o volante
       </p>
       <div class="flex gap-2">
         <!-- Card 1: Correct -->
@@ -50,7 +50,7 @@ async function handleConfirm(numbers: number[]): Promise<void> {
             <circle cx="49" cy="11" r="7" fill="#22c55e"/>
             <path d="M45.5 11 L48 13.5 L52.5 8.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <p class="text-xs text-green-700 font-medium text-center leading-tight">Flat &amp; centred</p>
+          <p class="text-xs text-green-700 font-medium text-center leading-tight">Plano e centralizado</p>
         </div>
 
         <!-- Card 2: Steep angle -->
@@ -68,7 +68,7 @@ async function handleConfirm(numbers: number[]): Promise<void> {
             <circle cx="49" cy="11" r="7" fill="#ef4444"/>
             <path d="M45.5 8L52.5 14M52.5 8L45.5 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <p class="text-xs text-red-600 font-medium text-center leading-tight">Avoid angles</p>
+          <p class="text-xs text-red-600 font-medium text-center leading-tight">Evite ângulos</p>
         </div>
 
         <!-- Card 3: Obstruction -->
@@ -89,7 +89,7 @@ async function handleConfirm(numbers: number[]): Promise<void> {
             <circle cx="49" cy="11" r="7" fill="#ef4444"/>
             <path d="M45.5 8L52.5 14M52.5 8L45.5 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <p class="text-xs text-red-600 font-medium text-center leading-tight">No obstructions</p>
+          <p class="text-xs text-red-600 font-medium text-center leading-tight">Sem obstruções</p>
         </div>
       </div>
     </div>

@@ -31,7 +31,7 @@ async function loadDraws(page: number) {
     drawsTotal.value = data.total
     drawsPage.value = data.page
   } catch (err) {
-    drawsError.value = err instanceof Error ? err.message : 'Failed to load draws'
+    drawsError.value = err instanceof Error ? err.message : 'Falha ao carregar sorteios'
   } finally {
     drawsLoading.value = false
   }
@@ -58,7 +58,7 @@ async function loadPredictions(page: number) {
     predTotal.value = data.total
     predPage.value = data.page
   } catch (err) {
-    predError.value = err instanceof Error ? err.message : 'Failed to load predictions'
+    predError.value = err instanceof Error ? err.message : 'Falha ao carregar previsões'
   } finally {
     predLoading.value = false
   }
@@ -129,7 +129,7 @@ watch(activeTab, (tab) => {
 <template>
   <div>
     <NuxtLink to="/play" class="text-sm text-blue-600 hover:underline mb-4 block">← Play</NuxtLink>
-    <h1 class="text-2xl font-bold mb-6">History</h1>
+    <h1 class="text-2xl font-bold mb-6">Histórico</h1>
 
     <!-- Tab bar -->
     <div class="flex gap-1 mb-6 border-b border-gray-200">
@@ -140,7 +140,7 @@ watch(activeTab, (tab) => {
           : 'border-transparent text-gray-500 hover:text-gray-700'"
         @click="activeTab = 'draws'"
       >
-        Historic Draws
+        Sorteios Históricos
         <span class="ml-1.5 text-xs text-gray-400">({{ drawsTotal }})</span>
       </button>
       <button
@@ -150,14 +150,14 @@ watch(activeTab, (tab) => {
           : 'border-transparent text-gray-500 hover:text-gray-700'"
         @click="activeTab = 'generated'"
       >
-        Generated Draws
+        Sorteios Gerados
         <span class="ml-1.5 text-xs text-gray-400">({{ predTotal }})</span>
       </button>
     </div>
 
     <!-- ── Historic Draws tab ─────────────────────────────────────────── -->
     <div v-if="activeTab === 'draws'">
-      <div v-if="drawsLoading" class="text-sm text-gray-400">Loading…</div>
+      <div v-if="drawsLoading" class="text-sm text-gray-400">Carregando…</div>
       <div v-else-if="drawsError" class="text-sm text-red-500">{{ drawsError }}</div>
       <div v-else>
         <!-- Table -->
@@ -166,8 +166,8 @@ watch(activeTab, (tab) => {
             <thead class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
               <tr>
                 <th class="px-4 py-3 text-left w-12">#</th>
-                <th class="px-4 py-3 text-left w-28">Date</th>
-                <th class="px-4 py-3 text-left">Numbers</th>
+                <th class="px-4 py-3 text-left w-28">Data</th>
+                <th class="px-4 py-3 text-left">Números</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 bg-white">
@@ -193,7 +193,7 @@ watch(activeTab, (tab) => {
         <!-- Pagination -->
         <div v-if="drawsTotalPages > 1" class="flex items-center justify-between mt-4 text-sm">
           <span class="text-gray-500">
-            Page {{ drawsPage }} of {{ drawsTotalPages }}
+            Página {{ drawsPage }} de {{ drawsTotalPages }}
             <span class="ml-2 text-gray-400">({{ drawsTotal }} total)</span>
           </span>
           <div class="flex gap-2">
@@ -220,26 +220,26 @@ watch(activeTab, (tab) => {
     <div v-if="activeTab === 'generated'">
       <!-- Filter -->
       <div class="flex items-center gap-3 mb-4">
-        <span class="text-sm text-gray-500">Filter:</span>
+        <span class="text-sm text-gray-500">Filtrar:</span>
         <select
           v-model="predKindFilter"
           class="text-sm border rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300"
           @change="onKindFilterChange"
         >
-          <option value="">All types</option>
-          <option value="next_draw">Next Draw</option>
-          <option value="scenario_path">Scenario Path</option>
+          <option value="">Todos os tipos</option>
+          <option value="next_draw">Próximo Sorteio</option>
+          <option value="scenario_path">Caminho de Cenário</option>
         </select>
       </div>
 
-      <div v-if="predLoading" class="text-sm text-gray-400">Loading…</div>
+      <div v-if="predLoading" class="text-sm text-gray-400">Carregando…</div>
       <div v-else-if="predError" class="text-sm text-red-500">{{ predError }}</div>
       <div v-else-if="predictions.length === 0" class="text-sm text-gray-400 py-8 text-center">
-        No generated draws yet. Go to
-        <NuxtLink to="/play/next-draw" class="text-purple-600 hover:underline">Suggest Next Draw</NuxtLink>
-        or
-        <NuxtLink to="/play/scenario" class="text-indigo-600 hover:underline">Scenario Path</NuxtLink>
-        to generate some.
+        Nenhum sorteio gerado ainda. Vá para
+        <NuxtLink to="/play/next-draw" class="text-purple-600 hover:underline">Sugerir Próximo Sorteio</NuxtLink>
+        ou
+        <NuxtLink to="/play/scenario" class="text-indigo-600 hover:underline">Caminho de Cenário</NuxtLink>
+        para gerar alguns.
       </div>
       <div v-else class="space-y-4">
         <!-- Next-draw entries -->
@@ -252,7 +252,7 @@ watch(activeTab, (tab) => {
             <div class="flex items-start justify-between mb-3">
               <div class="flex items-center gap-2">
                 <span class="text-xs font-semibold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full">
-                  Next Draw
+                  Próximo Sorteio
                 </span>
                 <ConfidenceBadge :confidence="item.prediction.confidence" />
               </div>
@@ -278,7 +278,7 @@ watch(activeTab, (tab) => {
             <div class="flex items-start justify-between mb-3">
               <div class="flex items-center gap-2">
                 <span class="text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">
-                  Scenario ({{ normalizeScenario(item).horizon }} draws)
+                  Cenário ({{ normalizeScenario(item).horizon }} sorteios)
                 </span>
               </div>
               <span class="text-xs text-gray-400">{{ formatDateTime(item.stored_at) }}</span>
@@ -308,7 +308,7 @@ watch(activeTab, (tab) => {
         <!-- Pagination -->
         <div v-if="predTotalPages > 1" class="flex items-center justify-between mt-2 text-sm">
           <span class="text-gray-500">
-            Page {{ predPage }} of {{ predTotalPages }}
+            Página {{ predPage }} de {{ predTotalPages }}
             <span class="ml-2 text-gray-400">({{ predTotal }} total)</span>
           </span>
           <div class="flex gap-2">
