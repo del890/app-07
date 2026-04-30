@@ -1,6 +1,6 @@
 [build]
-  base    = ""
-  command = "npm install && npm run generate"
+  base    = "client"
+  command = "npm install && npm run build"
   publish = ".output/public"
 
 [build.environment]
