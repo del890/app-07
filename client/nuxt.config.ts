@@ -2,6 +2,10 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+  nitro: {
+    // ensure publicDir is not changed away from '.output/public'
+    publicDir: '.output/public'
+  },
 
   ssr: false,
 

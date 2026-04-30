@@ -1,7 +1,7 @@
 [build]
-  base    = "client"
+  base = "client"
   command = "npm install && npm run build"
-  publish = ".output/public"
+  publish = "client/.output/public"
 
 [build.environment]
   NODE_VERSION = "24"
