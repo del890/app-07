@@ -41,7 +41,7 @@ export function useTicketScanner() {
     const videoH = videoEl.videoHeight
     if (!videoW || !videoH) return null
 
-    const MAX = 1280
+    const MAX = 1920
     const ratio = Math.min(MAX / videoW, MAX / videoH, 1)
     const w = Math.round(videoW * ratio)
     const h = Math.round(videoH * ratio)
@@ -51,6 +51,7 @@ export function useTicketScanner() {
     canvas.height = h
     const ctx = canvas.getContext('2d')
     if (!ctx) return null
+    ctx.filter = 'contrast(180%) brightness(110%) saturate(0%)'
     ctx.drawImage(videoEl, 0, 0, w, h)
 
     return new Promise<Blob | null>((resolve) => {

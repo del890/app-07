@@ -12,6 +12,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
+from pathlib import Path
 
 from fastapi import APIRouter, Request, UploadFile, status
 from fastapi.responses import JSONResponse
@@ -28,6 +29,19 @@ router = APIRouter(prefix="/tickets")
 
 _MAX_IMAGE_BYTES = 4 * 1024 * 1024  # 4 MB
 _ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/jpg"}
+
+# ── Reference blank ticket image ─────────────────────────────────────────────
+# Bundled at service/src/service/assets/lotofacil-blank.webp.
+# Loaded once at import time and cached; None if the file is missing (fallback
+# to single-image call).
+_BLANK_TICKET_B64: str | None = None
+_BLANK_TICKET_MEDIA_TYPE = "image/webp"
+
+try:
+    _blank_path = Path(__file__).parent.parent / "assets" / "lotofacil-blank.webp"
+    _BLANK_TICKET_B64 = base64.standard_b64encode(_blank_path.read_bytes()).decode()
+except Exception as _exc:
+    log.warning("ticket.reference_image.missing", extra={"error": str(_exc)})
 
 
 @router.post(
@@ -64,26 +78,37 @@ async def scan_ticket(request: Request, image: UploadFile) -> JSONResponse:
     media_type = content_type if content_type in ("image/jpeg", "image/png") else "image/jpeg"
     image_b64 = base64.standard_b64encode(raw).decode()
 
+    # Build message content: include the blank reference ticket when available
+    # so Claude can diff filled vs. blank rather than reading obscured digits.
+    content: list[object] = []
+    if _BLANK_TICKET_B64 is not None:
+        content.append(
+            {
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": _BLANK_TICKET_MEDIA_TYPE,
+                    "data": _BLANK_TICKET_B64,
+                },
+            }
+        )
+    content.append(
+        {
+            "type": "image",
+            "source": {
+                "type": "base64",
+                "media_type": media_type,
+                "data": image_b64,
+            },
+        }
+    )
+    content.append({"type": "text", "text": TICKET_SCAN_PROMPT})
+
     client = get_anthropic()
     response = client.messages.create(
         model=DEFAULT_MODEL,
         max_tokens=512,
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "image",
-                        "source": {
-                            "type": "base64",
-                            "media_type": media_type,
-                            "data": image_b64,
-                        },
-                    },
-                    {"type": "text", "text": TICKET_SCAN_PROMPT},
-                ],
-            }
-        ],
+        messages=[{"role": "user", "content": content}],
     )
 
     log.info(

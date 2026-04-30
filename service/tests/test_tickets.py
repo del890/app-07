@@ -7,6 +7,8 @@ Covers:
 - 422 (unreadable_ticket) when Claude returns malformed JSON
 - 422 (no_marks_detected) when Claude returns empty games array
 - 429 when rate limit is exceeded
+- Two-image-block path used when reference image is available
+- Single-image fallback used when reference image is None
 """
 
 from __future__ import annotations
@@ -204,3 +206,54 @@ def test_scan_rate_limit_returns_429(scan_client: TestClient, monkeypatch: pytes
 
     assert r2.status_code == 429
     assert r2.json()["error"]["code"] == "rate_limit_exceeded"
+
+
+# ---------------------------------------------------------------------------
+# Reference image integration
+# ---------------------------------------------------------------------------
+
+
+def test_scan_uses_two_image_blocks_when_reference_available(scan_client: TestClient) -> None:
+    """When the reference image is loaded, the Claude call must include two image blocks."""
+    mock_resp = _mock_anthropic_response('{"games": [[1, 2, 3]]}')
+
+    import service.api.tickets as tickets_mod
+
+    original = tickets_mod._BLANK_TICKET_B64
+    try:
+        tickets_mod._BLANK_TICKET_B64 = "FAKE_BASE64_REF"
+        with patch("service.api.tickets.get_anthropic") as mock_get:
+            mock_get.return_value.messages.create.return_value = mock_resp
+            resp = _upload(scan_client, _TINY_JPEG)
+            call_kwargs = mock_get.return_value.messages.create.call_args
+
+        assert resp.status_code == 200
+        content = call_kwargs.kwargs["messages"][0]["content"]
+        image_blocks = [b for b in content if b.get("type") == "image"]
+        assert len(image_blocks) == 2, "Expected two image blocks (reference + user photo)"
+        assert image_blocks[0]["source"]["data"] == "FAKE_BASE64_REF"
+        assert image_blocks[0]["source"]["media_type"] == "image/webp"
+    finally:
+        tickets_mod._BLANK_TICKET_B64 = original
+
+
+def test_scan_falls_back_to_single_image_when_reference_missing(scan_client: TestClient) -> None:
+    """When _BLANK_TICKET_B64 is None the Claude call must use exactly one image block."""
+    mock_resp = _mock_anthropic_response('{"games": [[4, 5, 6]]}')
+
+    import service.api.tickets as tickets_mod
+
+    original = tickets_mod._BLANK_TICKET_B64
+    try:
+        tickets_mod._BLANK_TICKET_B64 = None
+        with patch("service.api.tickets.get_anthropic") as mock_get:
+            mock_get.return_value.messages.create.return_value = mock_resp
+            resp = _upload(scan_client, _TINY_JPEG)
+            call_kwargs = mock_get.return_value.messages.create.call_args
+
+        assert resp.status_code == 200
+        content = call_kwargs.kwargs["messages"][0]["content"]
+        image_blocks = [b for b in content if b.get("type") == "image"]
+        assert len(image_blocks) == 1, "Expected only the user photo image block"
+    finally:
+        tickets_mod._BLANK_TICKET_B64 = original

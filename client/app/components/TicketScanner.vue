@@ -121,14 +121,28 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
           muted
           class="w-full h-full object-cover"
         />
+        <!-- Ticket alignment guide overlay — only shown while the camera stream is live -->
         <div
-          class="absolute inset-0 flex items-center justify-center pointer-events-none"
+          v-if="view === 'capture'"
+          class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
         >
-          <!-- Framing guide overlay -->
+          <!-- Dark vignette around the guide -->
+          <div class="absolute inset-0" style="background: rgba(0,0,0,0.35)" />
+          <!-- Guide rectangle: portrait ~1:2.3 ratio -->
           <div
-            class="w-4/5 h-3/5 border-2 border-white/60 rounded-lg"
-            style="box-shadow: 0 0 0 9999px rgba(0,0,0,0.35)"
-          />
+            class="relative z-10 flex flex-col items-center justify-end pb-2"
+            style="width: 52%; aspect-ratio: 1 / 2.3; border: 2px solid rgba(255,255,255,0.75); border-radius: 4px; box-shadow: 0 0 0 9999px rgba(0,0,0,0.35);"
+          >
+            <!-- Corner markers -->
+            <span class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white rounded-tl-sm" />
+            <span class="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-white rounded-tr-sm" />
+            <span class="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-white rounded-bl-sm" />
+            <span class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-white rounded-br-sm" />
+          </div>
+          <!-- Label below the guide -->
+          <p class="relative z-10 mt-2 text-xs text-white/80 font-medium tracking-wide">
+            Align ticket within the guide
+          </p>
         </div>
       </div>
 
