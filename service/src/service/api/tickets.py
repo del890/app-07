@@ -19,7 +19,7 @@ from fastapi.responses import JSONResponse
 
 from service.api.errors import ApiError
 from service.api.predictions import _check_rate_limit, _client_ip, _rate_limit_error
-from service.llm.client import DEFAULT_MODEL, get_anthropic
+from service.llm.client import HEAVY_MODEL, get_anthropic
 from service.models.tickets import ScannedTicket
 from service.prompts.ticket_scan import TICKET_SCAN_PROMPT
 
@@ -106,7 +106,7 @@ async def scan_ticket(request: Request, image: UploadFile) -> JSONResponse:
 
     client = get_anthropic()
     response = client.messages.create(
-        model=DEFAULT_MODEL,
+        model=HEAVY_MODEL,
         max_tokens=512,
         messages=[{"role": "user", "content": content}],
     )
@@ -114,7 +114,7 @@ async def scan_ticket(request: Request, image: UploadFile) -> JSONResponse:
     log.info(
         "ticket.scan.llm",
         extra={
-            "model": DEFAULT_MODEL,
+            "model": HEAVY_MODEL,
             "input_tokens": response.usage.input_tokens,
             "output_tokens": response.usage.output_tokens,
             "stop_reason": response.stop_reason,
