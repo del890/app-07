@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { PredictionProvenance } from '~/types/api'
+import { normalizePredictionExplanation } from '~/composables/usePredictionExplanation'
 
 const props = defineProps<{
   numbers: number[]
   confidence: number
-  explanation: string
+  explanation: unknown
   provenance: PredictionProvenance
   label?: string
 }>()
@@ -16,6 +17,8 @@ const barColor = computed(() => {
 })
 
 const barWidth = computed(() => `${Math.round(props.confidence * 100)}%`)
+
+const explanationView = computed(() => normalizePredictionExplanation(props.explanation))
 </script>
 
 <template>
@@ -63,9 +66,57 @@ const barWidth = computed(() => `${Math.round(props.confidence * 100)}%`)
     </div>
 
     <!-- Explanation -->
-    <p class="max-w-prose text-base leading-relaxed text-gray-600 mb-4">
-      {{ explanation }}
-    </p>
+    <div class="space-y-4 mb-4">
+      <p class="max-w-prose text-sm sm:text-base leading-relaxed text-gray-700">
+        {{ explanationView.summary }}
+      </p>
+
+      <section
+        v-for="section in explanationView.highlightSections"
+        :key="section.key"
+        class="rounded-lg border border-gray-200 bg-gray-50/80 p-3"
+      >
+        <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-2">
+          {{ section.title }}
+        </h3>
+        <ul v-if="section.items.length" class="space-y-1.5 text-sm text-gray-700">
+          <li v-for="item in section.items" :key="item">
+            • {{ item }}
+          </li>
+        </ul>
+        <p v-if="section.note" class="mt-2 text-sm text-gray-600 italic">
+          {{ section.note }}
+        </p>
+      </section>
+
+      <section v-if="explanationView.topProbabilities.length" class="rounded-lg border border-gray-200 p-3">
+        <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-600 mb-2">Top probabilidades</h3>
+        <div class="flex flex-wrap gap-2">
+          <span
+            v-for="entry in explanationView.topProbabilities"
+            :key="entry.number"
+            class="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 text-indigo-700 px-2.5 py-1 text-xs font-semibold"
+          >
+            <span>#{{ entry.number }}</span>
+            <span>{{ Math.round(entry.probability * 100) }}%</span>
+          </span>
+        </div>
+      </section>
+
+      <section v-if="explanationView.provenance.length" class="rounded-lg border border-emerald-200 bg-emerald-50/70 p-3">
+        <h3 class="text-xs font-semibold uppercase tracking-wide text-emerald-800 mb-1">Proveniencia da analise</h3>
+        <ul class="space-y-1 text-xs sm:text-sm text-emerald-900">
+          <li v-for="line in explanationView.provenance" :key="line">{{ line }}</li>
+        </ul>
+      </section>
+
+      <section v-if="explanationView.fallbackText" class="rounded-lg border border-amber-200 bg-amber-50 p-3">
+        <h3 class="text-xs font-semibold uppercase tracking-wide text-amber-700 mb-1">Detalhes adicionais</h3>
+        <p class="text-xs sm:text-sm leading-relaxed text-amber-900 break-words">
+          {{ explanationView.fallbackText }}
+        </p>
+      </section>
+    </div>
 
     <!-- Provenance footer (only for top-level cards, not labelled step cards) -->
     <div v-if="!label" class="text-xs text-gray-400 border-t pt-3">

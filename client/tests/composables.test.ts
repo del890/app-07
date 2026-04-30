@@ -144,3 +144,69 @@ describe('useSsePrediction — error handling', () => {
     expect(pred.error.value).toBe('network failure')
   })
 })
+
+// ──────────────────────────────────────────────────────────────────────────────
+// usePredictionExplanation
+// ──────────────────────────────────────────────────────────────────────────────
+
+describe('normalizePredictionExplanation', () => {
+  it('keeps plain text explanations as summary', async () => {
+    const { normalizePredictionExplanation } = await import('../app/composables/usePredictionExplanation')
+    const result = normalizePredictionExplanation('Analise com base nos ultimos sorteios.')
+
+    expect(result.summary).toBe('Analise com base nos ultimos sorteios.')
+    expect(result.isStructured).toBe(false)
+    expect(result.highlightSections).toEqual([])
+    expect(result.topProbabilities).toEqual([])
+  })
+
+  it('parses structured JSON explanation strings', async () => {
+    const { normalizePredictionExplanation } = await import('../app/composables/usePredictionExplanation')
+    const payload = JSON.stringify({
+      summary: 'Resumo principal',
+      top_probabilities: [
+        { number: 10, probability: 0.7 },
+        { number: 20, probability: 0.66 },
+      ],
+      frequency_full_highlights: {
+        top_numbers_by_share: [{ number: 10, share: 0.62 }],
+        note: 'Numero 10 lidera historicamente.',
+      },
+      provenance_anchor: {
+        record_count: 3656,
+        date_range: '2003-09-29 to 2026-04-08',
+        dataset_hash: 'abc123abc123abc123',
+      },
+    })
+
+    const result = normalizePredictionExplanation(payload)
+
+    expect(result.summary).toBe('Resumo principal')
+    expect(result.isStructured).toBe(true)
+    expect(result.topProbabilities).toHaveLength(2)
+    expect(result.highlightSections).toHaveLength(1)
+    expect(result.provenance).toHaveLength(3)
+  })
+
+  it('supports object-shaped explanation input', async () => {
+    const { normalizePredictionExplanation } = await import('../app/composables/usePredictionExplanation')
+    const result = normalizePredictionExplanation({
+      summary: 'Resumo vindo como objeto',
+      top_probabilities: [{ number: 13, probability: 0.63 }],
+    })
+
+    expect(result.summary).toBe('Resumo vindo como objeto')
+    expect(result.isStructured).toBe(true)
+    expect(result.topProbabilities[0]?.number).toBe(13)
+  })
+
+  it('falls back safely for malformed JSON-like strings', async () => {
+    const { normalizePredictionExplanation } = await import('../app/composables/usePredictionExplanation')
+    const malformed = '{"summary": "foo", invalid}'
+    const result = normalizePredictionExplanation(malformed)
+
+    expect(result.isStructured).toBe(false)
+    expect(result.fallbackText).toBe(malformed)
+    expect(result.summary).toContain('Resumo analitico indisponivel')
+  })
+})
