@@ -1,10 +1,10 @@
 [build]
-  base    = "client"
+  base    = ""
   command = "npm install && npm run generate"
   publish = ".output/public"
 
 [build.environment]
-  NODE_VERSION = "22"
+  NODE_VERSION = "20"
 
 # SPA fallback — all routes go to index.html
 [[redirects]]
