@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Button } from '~/components/ui/button'
+
 const emit = defineEmits<{
   confirm: [numbers: number[]]
 }>()
@@ -181,29 +183,28 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
       </div>
 
       <!-- Error banner -->
-      <p v-if="error" class="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-2 w-full max-w-sm">
+      <p v-if="error" class="text-sm text-destructive bg-destructive/10 rounded-lg px-4 py-2 w-full max-w-sm">
         {{ error }}
       </p>
 
       <!-- Capture button -->
-      <button
+      <Button
         v-if="!permissionDenied"
-        type="button"
-        class="w-full max-w-sm py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
+        class="w-full max-w-sm py-3"
         @click="handleCapture"
       >
         Capturar
-      </button>
+      </Button>
 
       <!-- File picker fallback -->
       <div v-if="permissionDenied" class="flex flex-col items-center gap-3 w-full max-w-sm">
-        <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 text-center">
+        <p class="text-sm text-warning-foreground bg-warning/10 border border-warning/30 rounded-lg px-4 py-2 text-center">
           Acesso à câmera negado. Você pode enviar uma foto do volante.
         </p>
-        <label
-          class="cursor-pointer px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          Escolher foto
+        <label class="cursor-pointer">
+          <Button as="span">
+            Escolher foto
+          </Button>
           <input
             ref="fileInputRef"
             type="file"
@@ -225,24 +226,16 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
           alt="Volante capturado"
         >
       </div>
-      <p class="text-sm text-gray-500 text-center">
+      <p class="text-sm text-muted-foreground text-center">
         O volante está nítido e totalmente visível?
       </p>
       <div class="flex gap-3 w-full max-w-sm">
-        <button
-          type="button"
-          class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-          @click="handleRetakeFromPreview"
-        >
+        <Button variant="secondary" class="flex-1" @click="handleRetakeFromPreview">
           Tirar novamente
-        </button>
-        <button
-          type="button"
-          class="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
-          @click="handleConfirmPreview"
-        >
+        </Button>
+        <Button class="flex-1" @click="handleConfirmPreview">
           Confirmar
-        </button>
+        </Button>
       </div>
     </template>
 
@@ -250,7 +243,7 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
     <template v-else-if="view === 'loading'">
       <div class="flex flex-col items-center gap-4 py-10">
         <svg
-          class="animate-spin h-10 w-10 text-purple-600"
+          class="animate-spin h-10 w-10 text-primary"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -262,22 +255,22 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
           />
         </svg>
-        <p class="text-gray-600 font-medium">Analisando volante…</p>
+        <p class="text-foreground font-medium">Analisando volante…</p>
       </div>
     </template>
 
     <!-- ── Result view ───────────────────────────────────────────────────── -->
     <template v-else-if="view === 'result'">
-      <p class="text-sm text-gray-500 text-center">
+      <p class="text-sm text-muted-foreground text-center">
         Revise os números detectados. Toque em qualquer célula para marcar/desmarcar.
       </p>
 
       <div
         v-for="(game, gIdx) in editableGames"
         :key="gIdx"
-        class="w-full max-w-sm bg-white border border-gray-200 rounded-xl p-4"
+        class="w-full max-w-sm bg-card border rounded-xl p-4"
       >
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
+        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
           Jogo {{ gIdx + 1 }}
         </p>
         <div class="grid grid-cols-5 gap-1.5">
@@ -288,42 +281,33 @@ const ALL_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 1)
             :class="[
               'h-9 sm:h-10 w-full rounded-lg text-xs sm:text-sm font-medium transition-colors',
               isMarked(gIdx, n)
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-foreground hover:bg-muted/70',
             ]"
             @click="toggleNumber(gIdx, n)"
           >
             {{ String(n).padStart(2, '0') }}
           </button>
         </div>
-        <p class="mt-2 text-xs text-gray-400 text-right">
+        <p class="mt-2 text-xs text-muted-foreground text-right">
           {{ game.length }} marcados
         </p>
       </div>
 
       <div class="flex gap-3 w-full max-w-sm">
-        <button
-          type="button"
-          class="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-          @click="handleDiscard"
-        >
+        <Button variant="secondary" class="flex-1" @click="handleDiscard">
           Descartar
-        </button>
-        <button
-          type="button"
-          class="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-          @click="handleRetake"
-        >
+        </Button>
+        <Button variant="secondary" @click="handleRetake">
           Tirar novamente
-        </button>
-        <button
-          type="button"
-          class="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+        </Button>
+        <Button
+          class="flex-1"
           :disabled="!editableGames[0]?.length"
           @click="handleSave"
         >
           Salvar
-        </button>
+        </Button>
       </div>
     </template>
   </div>

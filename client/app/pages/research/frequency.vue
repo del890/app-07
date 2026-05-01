@@ -9,6 +9,8 @@ import {
   Tooltip,
 } from 'chart.js'
 import type { FrequencyResult } from '~/types/api'
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
 
 ChartJS.register(Title, Tooltip, CategoryScale, LinearScale, BarElement)
 
@@ -45,8 +47,8 @@ const chartData = computed(() => {
       {
         label: 'Contagem',
         data: sorted.map((f) => f.count),
-        backgroundColor: 'rgba(59,130,246,0.6)',
-        borderColor: 'rgba(59,130,246,1)',
+        backgroundColor: 'hsl(262 52% 47% / 0.6)',
+        borderColor: 'hsl(262 52% 47%)',
         borderWidth: 1,
       },
     ],
@@ -61,47 +63,44 @@ const chartOptions = {
 </script>
 
 <template>
-  <div>
-    <NuxtLink to="/research" class="text-sm text-blue-600 hover:underline mb-4 block">← Pesquisa</NuxtLink>
-    <h1 class="text-2xl font-bold mb-1">Frequência por Número</h1>
-    <p class="text-xs text-gray-400 mb-4">
-      Conjunto de dados: {{ provenance?.content_hash?.slice(0, 12) }}
-      · Janela: {{ data?.meta.window ?? '—' }}
-      · {{ data?.meta.window_size ?? 0 }} sorteios
-    </p>
+  <div class="space-y-6">
+    <div>
+      <Button variant="ghost" as-child class="-ml-3 mb-1">
+        <NuxtLink to="/research">← Pesquisa</NuxtLink>
+      </Button>
+      <h1 class="text-2xl font-bold">Frequência por Número</h1>
+      <p class="text-xs text-muted-foreground">
+        Conjunto de dados: {{ provenance?.content_hash?.slice(0, 12) }}
+        · Janela: {{ data?.meta.window ?? '—' }}
+        · {{ data?.meta.window_size ?? 0 }} sorteios
+      </p>
+    </div>
 
     <!-- Window selector -->
-    <div class="flex items-center gap-2 mb-6">
-      <input
+    <div class="flex items-center gap-2">
+      <Input
         v-model="windowInput"
         type="number"
         min="1"
         placeholder="Janela deslizante (sorteios)"
-        class="border rounded px-3 py-1.5 text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        class="w-48"
         @keydown.enter="applyWindow"
       />
-      <button
-        class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
-        @click="applyWindow"
-      >Aplicar</button>
-      <button
-        v-if="windowSize"
-        class="px-3 py-1.5 bg-gray-200 text-sm rounded hover:bg-gray-300"
-        @click="clearWindow"
-      >Histórico completo</button>
+      <Button size="sm" @click="applyWindow">Aplicar</Button>
+      <Button v-if="windowSize" variant="outline" size="sm" @click="clearWindow">Histórico completo</Button>
     </div>
 
-    <div v-if="pending" class="text-gray-400 py-8 text-center">Carregando…</div>
-    <div v-else-if="error" class="text-red-600 py-4">{{ error.message }}</div>
+    <div v-if="pending" class="text-muted-foreground py-8 text-center">Carregando…</div>
+    <div v-else-if="error" class="text-destructive py-4">{{ error.message }}</div>
     <template v-else-if="data && chartData">
-      <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+      <div class="bg-card rounded-lg border p-4">
         <Bar :data="chartData" :options="chartOptions" />
       </div>
 
       <!-- Table -->
-      <div class="overflow-x-auto bg-white rounded-lg border border-gray-200">
+      <div class="overflow-x-auto bg-card rounded-lg border">
         <table class="w-full text-sm">
-          <thead class="bg-gray-50 border-b border-gray-200">
+          <thead class="bg-muted border-b">
             <tr>
               <th class="px-4 py-2 text-left font-medium">#</th>
               <th class="px-4 py-2 text-right font-medium">Contagem</th>
@@ -112,7 +111,7 @@ const chartOptions = {
             <tr
               v-for="f in [...data.frequencies].sort((a, b) => a.number - b.number)"
               :key="f.number"
-              class="border-b border-gray-100 hover:bg-gray-50"
+              class="border-b hover:bg-muted/30"
             >
               <td class="px-4 py-2 font-mono">{{ f.number }}</td>
               <td class="px-4 py-2 text-right tabular-nums">{{ f.count }}</td>

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { cn } from '~/lib/utils'
+import { Badge } from '~/components/ui/badge'
+
 const props = defineProps<{
   confidence: number | null | undefined
 }>()
@@ -16,21 +19,21 @@ const percentage = computed(() => {
 
 const colorClass = computed(() => {
   const c = props.confidence as number
-  if (c >= 0.7) return 'bg-green-100 text-green-800 border-green-300'
-  if (c >= 0.4) return 'bg-yellow-100 text-yellow-800 border-yellow-300'
-  return 'bg-red-100 text-red-800 border-red-300'
+  if (c >= 0.7) return 'bg-success/15 text-success border-success/30'
+  if (c >= 0.4) return 'bg-warning/15 text-warning border-warning/30'
+  return 'bg-destructive/15 text-destructive border-destructive/30'
 })
 </script>
 
 <template>
-  <span
+  <Badge
     v-if="isValid"
-    class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-sm font-semibold border"
-    :class="colorClass"
+    variant="outline"
+    :class="cn('gap-1 font-semibold', colorClass)"
     :title="`Confiança: ${percentage}%`"
     aria-label="Índice de confiança"
   >
     {{ percentage }}%
-  </span>
+  </Badge>
   <!-- Render nothing if confidence is missing or invalid — per spec 11.5 -->
 </template>

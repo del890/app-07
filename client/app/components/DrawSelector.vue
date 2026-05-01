@@ -32,12 +32,12 @@ function clearAll(): void {
   <div>
     <!-- Counter and clear button -->
     <div class="flex items-center justify-between mb-3">
-      <span class="text-sm font-medium" :class="isValid ? 'text-green-600' : 'text-gray-600'">
+      <span class="text-sm font-medium" :class="isValid ? 'text-success' : 'text-muted-foreground'">
         {{ count }} / 15 selecionados
       </span>
       <button
         type="button"
-        class="text-xs text-gray-400 hover:text-gray-600 underline disabled:opacity-30 disabled:cursor-not-allowed"
+        class="text-xs text-muted-foreground hover:text-foreground underline disabled:opacity-30 disabled:cursor-not-allowed"
         :disabled="count === 0"
         @click="clearAll"
       >
@@ -54,10 +54,10 @@ function clearAll(): void {
         class="h-11 w-full rounded-lg text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1"
         :class="
           selected.has(n)
-            ? 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500'
+            ? 'bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-primary'
             : isFull
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-400'
+              ? 'bg-muted text-muted-foreground cursor-not-allowed'
+              : 'bg-muted text-foreground hover:bg-muted/70 focus:ring-ring'
         "
         :disabled="isFull && !selected.has(n)"
         :aria-pressed="selected.has(n)"

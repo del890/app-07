@@ -11,22 +11,24 @@ const views = [
 </script>
 
 <template>
-  <div>
-    <h1 class="text-2xl font-bold mb-2">Modo Pesquisa</h1>
-    <p class="text-gray-500 mb-6 text-sm">
-      Análise estatística de sorteios históricos da Lotofácil. Todos os resultados possuem
-      <span class="font-medium text-amber-700">artifact_type: research</span> — apenas para entretenimento.
-    </p>
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold mb-1">Modo Pesquisa</h1>
+      <p class="text-muted-foreground text-sm">
+        Análise estatística de sorteios históricos da Lotofácil. Todos os resultados possuem
+        <span class="font-medium text-warning-foreground">artifact_type: research</span> — apenas para entretenimento.
+      </p>
+    </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <NuxtLink
         v-for="view in views"
         :key="view.to"
         :to="view.to"
-        class="block p-5 bg-white rounded-lg border border-gray-200 hover:border-blue-400 hover:shadow-sm transition-all"
+        class="block p-5 bg-card rounded-lg border border-border border-l-4 border-l-primary/70 hover:border-primary/40 hover:border-l-primary hover:bg-primary/5 hover:shadow-lg transition-all group"
       >
-        <div class="font-semibold text-lg mb-1">{{ view.label }}</div>
-        <div class="text-sm text-gray-500">{{ view.description }}</div>
+        <div class="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">{{ view.label }}</div>
+        <div class="text-sm text-muted-foreground">{{ view.description }}</div>
       </NuxtLink>
     </div>
   </div>

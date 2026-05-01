@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { GapResult } from '~/types/api'
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
 
 const { get } = useApi()
 
@@ -13,40 +15,42 @@ const { data, pending, error } = await useAsyncData<GapResult>(
 )
 
 const classColor: Record<string, string> = {
-  hot: 'bg-red-100 text-red-700',
-  cold: 'bg-blue-100 text-blue-700',
-  neutral: 'bg-gray-100 text-gray-600',
+  hot: 'bg-destructive/15 text-destructive',
+  cold: 'bg-primary/10 text-primary',
+  neutral: 'bg-muted text-muted-foreground',
 }
 </script>
 
 <template>
-  <div>
-    <NuxtLink to="/research" class="text-sm text-blue-600 hover:underline mb-4 block">← Pesquisa</NuxtLink>
-    <h1 class="text-2xl font-bold mb-1">Análise de Intervalos Quente / Frio</h1>
-    <p class="text-xs text-gray-400 mb-4">
-      Limiar — fator quente: {{ hotFactor }}× · fator frio: {{ coldFactor }}×
-      <span class="ml-2 italic">(quente = intervalo_atual &lt; média × fator_quente; frio = intervalo_atual &gt; média × fator_frio)</span>
-    </p>
+  <div class="space-y-6">
+    <div>
+      <Button variant="ghost" as-child class="-ml-3 mb-1">
+        <NuxtLink to="/research">← Pesquisa</NuxtLink>
+      </Button>
+      <h1 class="text-2xl font-bold">Análise de Intervalos Quente / Frio</h1>
+      <p class="text-xs text-muted-foreground">
+        Limiar — fator quente: {{ hotFactor }}× · fator frio: {{ coldFactor }}×
+        <span class="ml-2 italic">(quente = intervalo_atual &lt; média × fator_quente; frio = intervalo_atual &gt; média × fator_frio)</span>
+      </p>
+    </div>
 
     <!-- Threshold controls -->
-    <div class="flex flex-wrap items-center gap-4 mb-6 text-sm">
+    <div class="flex flex-wrap items-center gap-4 text-sm">
       <label class="flex items-center gap-2">
         Fator quente
-        <input v-model.number="hotFactor" type="number" step="0.1" min="0.1" max="1.0"
-          class="border rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        <Input v-model.number="hotFactor" type="number" step="0.1" min="0.1" max="1.0" class="w-20" />
       </label>
       <label class="flex items-center gap-2">
         Fator frio
-        <input v-model.number="coldFactor" type="number" step="0.1" min="1.1" max="10.0"
-          class="border rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        <Input v-model.number="coldFactor" type="number" step="0.1" min="1.1" max="10.0" class="w-20" />
       </label>
     </div>
 
-    <div v-if="pending" class="text-gray-400 py-8 text-center">Carregando…</div>
-    <div v-else-if="error" class="text-red-600 py-4">{{ error.message }}</div>
-    <div v-else-if="data" class="overflow-x-auto bg-white rounded-lg border border-gray-200">
+    <div v-if="pending" class="text-muted-foreground py-8 text-center">Carregando…</div>
+    <div v-else-if="error" class="text-destructive py-4">{{ error.message }}</div>
+    <div v-else-if="data" class="overflow-x-auto bg-card rounded-lg border">
       <table class="w-full text-sm">
-        <thead class="bg-gray-50 border-b border-gray-200">
+        <thead class="bg-muted border-b">
           <tr>
             <th class="px-4 py-2 text-left font-medium">#</th>
             <th class="px-4 py-2 text-right font-medium">Intervalo Atual</th>
@@ -59,7 +63,7 @@ const classColor: Record<string, string> = {
           <tr
             v-for="g in data.gaps"
             :key="g.number"
-            class="border-b border-gray-100 hover:bg-gray-50"
+            class="border-b hover:bg-muted/30"
           >
             <td class="px-4 py-2 font-mono">{{ g.number }}</td>
             <td class="px-4 py-2 text-right tabular-nums">{{ g.current_gap }}</td>

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { ScenarioPathPrediction } from '~/types/api'
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
 
 const { status, events, result, error, predictScenarioPath, reset } = useSsePrediction()
 
@@ -16,29 +18,29 @@ function start() {
 </script>
 
 <template>
-  <div>
-    <NuxtLink to="/play" class="text-sm text-blue-600 hover:underline mb-4 block">← Jogar</NuxtLink>
-    <h1 class="text-2xl font-bold mb-6">Caminho de Cenário</h1>
+  <div class="space-y-6">
+    <div>
+      <Button variant="ghost" as-child class="-ml-3 mb-1">
+        <NuxtLink to="/play">← Jogar</NuxtLink>
+      </Button>
+      <h1 class="text-2xl font-bold">Caminho de Cenário</h1>
+    </div>
 
-    <div class="flex items-center gap-4 mb-6">
+    <div class="flex items-center gap-4">
       <label class="flex items-center gap-2 text-sm">
         Horizonte (sorteios à frente)
-        <input
+        <Input
           v-model.number="horizon"
           type="number"
           min="1"
           max="10"
-          class="border rounded px-2 py-1.5 w-20 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          class="w-20"
         />
       </label>
-      <button
-        class="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50"
-        :disabled="isStreaming"
-        @click="start"
-      >
+      <Button :disabled="isStreaming" @click="start">
         <svg
           v-if="isStreaming"
-          class="animate-spin h-4 w-4"
+          class="animate-spin h-4 w-4 mr-2"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -47,7 +49,7 @@ function start() {
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
         {{ isStreaming ? 'Gerando…' : 'Gerar Cenário' }}
-      </button>
+      </Button>
     </div>
 
     <!-- Streaming tool events -->
@@ -56,14 +58,14 @@ function start() {
     </div>
 
     <!-- Uncalibrated banner -->
-    <div v-if="isDone && !isCalibrated" class="bg-amber-50 border border-amber-300 rounded-lg p-5 max-w-xl">
-      <h2 class="font-semibold text-amber-800 mb-1">Calibração Necessária</h2>
-      <p class="text-sm text-amber-700">
+    <div v-if="isDone && !isCalibrated" class="bg-warning/10 border border-warning/30 rounded-lg p-5 max-w-xl">
+      <h2 class="font-semibold text-warning-foreground mb-1">Calibração Necessária</h2>
+      <p class="text-sm text-warning-foreground/80">
         O motor de previsão não está calibrado. Caminhos de cenário não podem ser exibidos.
       </p>
-      <NuxtLink to="/research" class="mt-3 inline-block text-sm text-blue-600 hover:underline">
-        Explorar dados de pesquisa →
-      </NuxtLink>
+      <Button variant="ghost" as-child class="mt-2 -ml-3">
+        <NuxtLink to="/research">Explorar dados de pesquisa →</NuxtLink>
+      </Button>
     </div>
 
     <!-- Path steps — monotonically non-increasing confidence (13.4) -->
@@ -78,19 +80,19 @@ function start() {
         :provenance="prediction.provenance"
       />
 
-      <div class="text-xs text-gray-400">
+      <div class="text-xs text-muted-foreground">
         Conjunto de dados: {{ prediction.provenance.dataset_hash.slice(0, 12) }}
         · {{ prediction.provenance.computed_at }}
       </div>
     </div>
 
-    <div v-if="status === 'error'" class="mt-4 text-red-600 text-sm">{{ error }}</div>
+    <div v-if="status === 'error'" class="text-destructive text-sm">{{ error }}</div>
 
     <!-- History link shown after a prediction is saved -->
-    <div v-if="isDone && isCalibrated && prediction" class="mt-4">
-      <NuxtLink to="/play/history" class="text-sm text-gray-500 hover:text-gray-700 hover:underline">
-        Ver previsões salvas →
-      </NuxtLink>
+    <div v-if="isDone && isCalibrated && prediction">
+      <Button variant="ghost" as-child class="-ml-3">
+        <NuxtLink to="/play/history">Ver previsões salvas →</NuxtLink>
+      </Button>
     </div>
   </div>
 </template>

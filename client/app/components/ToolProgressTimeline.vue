@@ -79,16 +79,16 @@ const hasSteps = computed(() => steps.value.length > 0)
           <!-- Running: pulsing ring -->
           <span
             v-if="step.state === 'running'"
-            class="absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75 animate-ping"
+            class="absolute inline-flex h-full w-full rounded-full bg-primary/60 opacity-75 animate-ping"
           />
           <span
             v-if="step.state === 'running'"
-            class="relative inline-flex h-3 w-3 rounded-full bg-purple-500"
+            class="relative inline-flex h-3 w-3 rounded-full bg-primary"
           />
           <!-- Done: checkmark -->
           <svg
             v-else
-            class="h-5 w-5 text-green-500"
+            class="h-5 w-5 text-success"
             viewBox="0 0 20 20"
             fill="currentColor"
             aria-hidden="true"
@@ -103,7 +103,7 @@ const hasSteps = computed(() => steps.value.length > 0)
 
         <!-- Label -->
         <span
-          :class="step.state === 'running' ? 'text-gray-700 font-medium' : 'text-gray-500'"
+          :class="step.state === 'running' ? 'text-foreground font-medium' : 'text-muted-foreground'"
         >
           {{ step.label }}
         </span>

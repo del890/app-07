@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NextDrawPrediction } from '~/types/api'
+import { Button } from '~/components/ui/button'
 
 const { status, events, result, error, predictNextDraw, reset } = useSsePrediction()
 
@@ -17,18 +18,18 @@ function start() {
 </script>
 
 <template>
-  <div>
-    <NuxtLink to="/play" class="text-sm text-blue-600 hover:underline mb-4 block">← Jogar</NuxtLink>
-    <h1 class="text-2xl font-bold mb-6">Sugerir Próximo Sorteio</h1>
+  <div class="space-y-6">
+    <div>
+      <Button variant="ghost" as-child class="-ml-3 mb-1">
+        <NuxtLink to="/play">← Jogar</NuxtLink>
+      </Button>
+      <h1 class="text-2xl font-bold">Sugerir Próximo Sorteio</h1>
+    </div>
 
-    <button
-      class="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50"
-      :disabled="isStreaming"
-      @click="start"
-    >
+    <Button size="lg" :disabled="isStreaming" @click="start">
       <svg
         v-if="isStreaming"
-        class="animate-spin h-4 w-4"
+        class="animate-spin h-4 w-4 mr-2"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -37,30 +38,30 @@ function start() {
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
       </svg>
       {{ isStreaming ? 'Analisando…' : 'Gerar Sugestão' }}
-    </button>
+    </Button>
 
     <!-- Streaming tool events -->
-    <div class="mt-6 max-w-xl">
+    <div class="max-w-xl">
       <ToolProgressTimeline :events="events" />
     </div>
 
     <!-- Uncalibrated banner (13.5) -->
     <div
       v-if="isDone && !isCalibrated"
-      class="mt-6 bg-amber-50 border border-amber-300 rounded-lg p-5 max-w-xl"
+      class="bg-warning/10 border border-warning/30 rounded-lg p-5 max-w-xl"
     >
-      <h2 class="font-semibold text-amber-800 mb-1">Calibração Necessária</h2>
-      <p class="text-sm text-amber-700">
+      <h2 class="font-semibold text-warning-foreground mb-1">Calibração Necessária</h2>
+      <p class="text-sm text-warning-foreground/80">
         O motor de previsão ainda não foi calibrado ou a calibração está desatualizada.
         Sugestões não podem ser exibidas neste estado.
       </p>
-      <NuxtLink to="/research" class="mt-3 inline-block text-sm text-blue-600 hover:underline">
-        Explorar dados de pesquisa →
-      </NuxtLink>
+      <Button variant="ghost" as-child class="mt-2 -ml-3">
+        <NuxtLink to="/research">Explorar dados de pesquisa →</NuxtLink>
+      </Button>
     </div>
 
     <!-- Prediction result -->
-    <div v-if="isDone && isCalibrated && prediction" class="mt-6 max-w-xl">
+    <div v-if="isDone && isCalibrated && prediction" class="max-w-xl">
       <PredictionCard
         :numbers="prediction.numbers"
         :confidence="prediction.confidence"
@@ -70,13 +71,13 @@ function start() {
     </div>
 
     <!-- Error -->
-    <div v-if="status === 'error'" class="mt-4 text-red-600 text-sm">{{ error }}</div>
+    <div v-if="status === 'error'" class="text-destructive text-sm">{{ error }}</div>
 
     <!-- History link shown after a prediction is saved -->
-    <div v-if="isDone && isCalibrated && prediction" class="mt-4">
-      <NuxtLink to="/play/history" class="text-sm text-gray-500 hover:text-gray-700 hover:underline">
-        Ver previsões salvas →
-      </NuxtLink>
+    <div v-if="isDone && isCalibrated && prediction">
+      <Button variant="ghost" as-child class="-ml-3">
+        <NuxtLink to="/play/history">Ver previsões salvas →</NuxtLink>
+      </Button>
     </div>
   </div>
 </template>

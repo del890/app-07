@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NextDrawPrediction } from '~/types/api'
+import { Button } from '~/components/ui/button'
 
 const { status, events, result, error, predictNextDraw, reset } = useSsePrediction()
 
@@ -14,38 +15,28 @@ async function request() {
 </script>
 
 <template>
-  <div>
-    <h1 class="text-2xl font-bold mb-2">Modo Jogar</h1>
-    <p class="text-sm text-gray-500 mb-1">Apenas para fins de pesquisa e entretenimento.</p>
-    <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-1.5 mb-6 inline-block">
-      Padrões estatísticos não garantem resultados futuros. Jogue com responsabilidade.
-    </p>
+  <div class="space-y-6">
+    <div>
+      <h1 class="text-2xl font-bold mb-1">Modo Jogar</h1>
+      <p class="text-sm text-muted-foreground">Apenas para fins de pesquisa e entretenimento.</p>
+      <p class="text-xs text-warning-foreground bg-warning/10 border border-warning/30 rounded px-3 py-1.5 mt-2 inline-block">
+        Padrões estatísticos não garantem resultados futuros. Jogue com responsabilidade.
+      </p>
+    </div>
 
-    <div class="flex gap-4 mb-6">
-      <NuxtLink
-        to="/play/next-draw"
-        class="px-5 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
-      >
-        Sugerir Próximo Sorteio
-      </NuxtLink>
-      <NuxtLink
-        to="/play/scenario"
-        class="px-5 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
-      >
-        Caminho de Cenário
-      </NuxtLink>
-      <NuxtLink
-        to="/play/my-draw"
-        class="px-5 py-3 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition-colors"
-      >
-        Meu Volante
-      </NuxtLink>
-      <NuxtLink
-        to="/play/history"
-        class="px-5 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-      >
-        Histórico
-      </NuxtLink>
+    <div class="flex flex-wrap gap-3">
+      <Button as-child>
+        <NuxtLink to="/play/next-draw">Sugerir Próximo Sorteio</NuxtLink>
+      </Button>
+      <Button as-child>
+        <NuxtLink to="/play/scenario">Caminho de Cenário</NuxtLink>
+      </Button>
+      <Button as-child>
+        <NuxtLink to="/play/my-draw">Meu Volante</NuxtLink>
+      </Button>
+      <Button variant="secondary" as-child>
+        <NuxtLink to="/play/history">Histórico</NuxtLink>
+      </Button>
     </div>
 
     <NuxtPage />

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Button } from '~/components/ui/button'
+
 useHead({ title: 'Escanear Volante — Lotofácil' })
 
 const router = useRouter()
@@ -15,27 +17,26 @@ async function handleConfirm(numbers: number[]): Promise<void> {
 </script>
 
 <template>
-  <div>
-    <div class="flex items-center justify-between mb-4">
-      <NuxtLink to="/play/my-draw" class="text-sm text-blue-600 hover:underline">
-        ← Meu Volante
-      </NuxtLink>
+  <div class="space-y-5">
+    <div>
+      <Button variant="ghost" as-child class="-ml-3 mb-1">
+        <NuxtLink to="/play/my-draw">← Meu Volante</NuxtLink>
+      </Button>
+      <h1 class="text-2xl font-bold mb-1">Escanear Volante</h1>
+      <p class="text-sm text-muted-foreground">
+        Aponte a câmera para um volante da Lotofácil preenchido. O app lerá os números marcados
+        automaticamente.
+      </p>
     </div>
 
-    <h1 class="text-2xl font-bold mb-1">Escanear Volante</h1>
-    <p class="text-sm text-gray-500 mb-4">
-      Aponte a câmera para um volante da Lotofácil preenchido. O app lerá os números marcados
-      automaticamente.
-    </p>
-
     <!-- Positioning guide -->
-    <div class="w-full mb-5">
-      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+    <div class="w-full">
+      <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
         Como posicionar o volante
       </p>
       <div class="flex gap-2">
         <!-- Card 1: Correct -->
-        <div class="flex-1 flex flex-col items-center gap-1.5 bg-green-50 border border-green-200 rounded-xl p-2">
+        <div class="flex-1 flex flex-col items-center gap-1.5 bg-success/10 border border-success/30 rounded-xl p-2">
           <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
             <!-- Camera frame -->
             <rect x="2" y="2" width="56" height="68" rx="3" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
@@ -50,11 +51,11 @@ async function handleConfirm(numbers: number[]): Promise<void> {
             <circle cx="49" cy="11" r="7" fill="#22c55e"/>
             <path d="M45.5 11 L48 13.5 L52.5 8.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <p class="text-xs text-green-700 font-medium text-center leading-tight">Plano e centralizado</p>
+          <p class="text-xs text-success font-medium text-center leading-tight">Plano e centralizado</p>
         </div>
 
         <!-- Card 2: Steep angle -->
-        <div class="flex-1 flex flex-col items-center gap-1.5 bg-red-50 border border-red-200 rounded-xl p-2">
+        <div class="flex-1 flex flex-col items-center gap-1.5 bg-destructive/10 border border-destructive/30 rounded-xl p-2">
           <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
             <!-- Camera frame -->
             <rect x="2" y="2" width="56" height="68" rx="3" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
@@ -68,11 +69,11 @@ async function handleConfirm(numbers: number[]): Promise<void> {
             <circle cx="49" cy="11" r="7" fill="#ef4444"/>
             <path d="M45.5 8L52.5 14M52.5 8L45.5 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <p class="text-xs text-red-600 font-medium text-center leading-tight">Evite ângulos</p>
+          <p class="text-xs text-destructive font-medium text-center leading-tight">Evite ângulos</p>
         </div>
 
         <!-- Card 3: Obstruction -->
-        <div class="flex-1 flex flex-col items-center gap-1.5 bg-red-50 border border-red-200 rounded-xl p-2">
+        <div class="flex-1 flex flex-col items-center gap-1.5 bg-destructive/10 border border-destructive/30 rounded-xl p-2">
           <svg viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
             <!-- Camera frame -->
             <rect x="2" y="2" width="56" height="68" rx="3" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
@@ -89,7 +90,7 @@ async function handleConfirm(numbers: number[]): Promise<void> {
             <circle cx="49" cy="11" r="7" fill="#ef4444"/>
             <path d="M45.5 8L52.5 14M52.5 8L45.5 14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
-          <p class="text-xs text-red-600 font-medium text-center leading-tight">Sem obstruções</p>
+          <p class="text-xs text-destructive font-medium text-center leading-tight">Sem obstruções</p>
         </div>
       </div>
     </div>

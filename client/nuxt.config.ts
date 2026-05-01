@@ -9,6 +9,8 @@ export default defineNuxtConfig({
 
   ssr: false,
 
+  css: ['~/assets/css/main.css'],
+
   modules: ['@nuxtjs/tailwindcss', '@nuxt/eslint'],
 
   typescript: {

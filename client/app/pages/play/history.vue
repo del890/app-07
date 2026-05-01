@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Button } from '~/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import type {
   DrawsPage,
   HistoricalDraw,
@@ -127,59 +129,63 @@ watch(activeTab, (tab) => {
 </script>
 
 <template>
-  <div>
-    <NuxtLink to="/play" class="text-sm text-blue-600 hover:underline mb-4 block">← Play</NuxtLink>
-    <h1 class="text-2xl font-bold mb-6">Histórico</h1>
+  <div class="space-y-6">
+    <div>
+      <Button variant="ghost" as-child class="-ml-3 mb-1">
+        <NuxtLink to="/play">← Play</NuxtLink>
+      </Button>
+      <h1 class="text-2xl font-bold">Histórico</h1>
+    </div>
 
     <!-- Tab bar -->
-    <div class="flex gap-1 mb-6 border-b border-gray-200">
+    <div class="flex gap-1 border-b">
       <button
         class="px-5 py-2.5 text-sm font-medium border-b-2 transition-colors"
         :class="activeTab === 'draws'
-          ? 'border-purple-600 text-purple-700'
-          : 'border-transparent text-gray-500 hover:text-gray-700'"
+          ? 'border-primary text-primary'
+          : 'border-transparent text-muted-foreground hover:text-foreground'"
         @click="activeTab = 'draws'"
       >
         Sorteios Históricos
-        <span class="ml-1.5 text-xs text-gray-400">({{ drawsTotal }})</span>
+        <span class="ml-1.5 text-xs text-muted-foreground">({{ drawsTotal }})</span>
       </button>
       <button
         class="px-5 py-2.5 text-sm font-medium border-b-2 transition-colors"
         :class="activeTab === 'generated'
-          ? 'border-indigo-600 text-indigo-700'
-          : 'border-transparent text-gray-500 hover:text-gray-700'"
+          ? 'border-primary text-primary'
+          : 'border-transparent text-muted-foreground hover:text-foreground'"
         @click="activeTab = 'generated'"
       >
         Sorteios Gerados
-        <span class="ml-1.5 text-xs text-gray-400">({{ predTotal }})</span>
+        <span class="ml-1.5 text-xs text-muted-foreground">({{ predTotal }})</span>
       </button>
     </div>
 
     <!-- ── Historic Draws tab ─────────────────────────────────────────── -->
     <div v-if="activeTab === 'draws'">
-      <div v-if="drawsLoading" class="text-sm text-gray-400">Carregando…</div>
-      <div v-else-if="drawsError" class="text-sm text-red-500">{{ drawsError }}</div>
+      <div v-if="drawsLoading" class="text-sm text-muted-foreground">Carregando…</div>
+      <div v-else-if="drawsError" class="text-sm text-destructive">{{ drawsError }}</div>
       <div v-else>
         <!-- Table -->
-        <div class="overflow-x-auto rounded-lg border border-gray-200">
+        <div class="overflow-x-auto rounded-lg border">
           <table class="min-w-full text-sm">
-            <thead class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+            <thead class="bg-muted text-xs text-muted-foreground uppercase tracking-wide">
               <tr>
                 <th class="px-4 py-3 text-left w-12">#</th>
                 <th class="px-4 py-3 text-left w-28">Data</th>
                 <th class="px-4 py-3 text-left">Números</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-100 bg-white">
-              <tr v-for="draw in draws" :key="draw.original_id" class="hover:bg-gray-50">
-                <td class="px-4 py-2.5 text-gray-400 font-mono text-xs">{{ draw.original_id }}</td>
-                <td class="px-4 py-2.5 text-gray-600 whitespace-nowrap">{{ formatDate(draw.date) }}</td>
+            <tbody class="divide-y bg-card">
+              <tr v-for="draw in draws" :key="draw.original_id" class="hover:bg-muted/30">
+                <td class="px-4 py-2.5 text-muted-foreground font-mono text-xs">{{ draw.original_id }}</td>
+                <td class="px-4 py-2.5 text-foreground whitespace-nowrap">{{ formatDate(draw.date) }}</td>
                 <td class="px-4 py-2.5">
                   <div class="flex flex-wrap gap-1">
                     <span
                       v-for="n in draw.numbers"
                       :key="n"
-                      class="w-7 h-7 flex items-center justify-center rounded-full bg-purple-100 text-purple-800 font-semibold text-xs"
+                      class="w-7 h-7 flex items-center justify-center rounded-full bg-accent text-accent-foreground font-semibold text-xs"
                     >
                       {{ n }}
                     </span>
@@ -192,25 +198,13 @@ watch(activeTab, (tab) => {
 
         <!-- Pagination -->
         <div v-if="drawsTotalPages > 1" class="flex items-center justify-between mt-4 text-sm">
-          <span class="text-gray-500">
+          <span class="text-muted-foreground">
             Página {{ drawsPage }} de {{ drawsTotalPages }}
-            <span class="ml-2 text-gray-400">({{ drawsTotal }} total)</span>
+            <span class="ml-2 text-muted-foreground/60">({{ drawsTotal }} total)</span>
           </span>
           <div class="flex gap-2">
-            <button
-              :disabled="drawsPage <= 1"
-              class="px-3 py-1.5 rounded border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-              @click="loadDraws(drawsPage - 1)"
-            >
-              ←
-            </button>
-            <button
-              :disabled="drawsPage >= drawsTotalPages"
-              class="px-3 py-1.5 rounded border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-              @click="loadDraws(drawsPage + 1)"
-            >
-              →
-            </button>
+            <Button variant="outline" size="sm" :disabled="drawsPage <= 1" @click="loadDraws(drawsPage - 1)">←</Button>
+            <Button variant="outline" size="sm" :disabled="drawsPage >= drawsTotalPages" @click="loadDraws(drawsPage + 1)">→</Button>
           </div>
         </div>
       </div>
@@ -220,25 +214,26 @@ watch(activeTab, (tab) => {
     <div v-if="activeTab === 'generated'">
       <!-- Filter -->
       <div class="flex items-center gap-3 mb-4">
-        <span class="text-sm text-gray-500">Filtrar:</span>
-        <select
-          v-model="predKindFilter"
-          class="text-sm border rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-          @change="onKindFilterChange"
-        >
-          <option value="">Todos os tipos</option>
-          <option value="next_draw">Próximo Sorteio</option>
-          <option value="scenario_path">Caminho de Cenário</option>
-        </select>
+        <span class="text-sm text-muted-foreground">Filtrar:</span>
+        <Select v-model="predKindFilter" @update:model-value="onKindFilterChange">
+          <SelectTrigger class="w-48">
+            <SelectValue placeholder="Todos os tipos" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os tipos</SelectItem>
+            <SelectItem value="next_draw">Próximo Sorteio</SelectItem>
+            <SelectItem value="scenario_path">Caminho de Cenário</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      <div v-if="predLoading" class="text-sm text-gray-400">Carregando…</div>
-      <div v-else-if="predError" class="text-sm text-red-500">{{ predError }}</div>
-      <div v-else-if="predictions.length === 0" class="text-sm text-gray-400 py-8 text-center">
+      <div v-if="predLoading" class="text-sm text-muted-foreground">Carregando…</div>
+      <div v-else-if="predError" class="text-sm text-destructive">{{ predError }}</div>
+      <div v-else-if="predictions.length === 0" class="text-sm text-muted-foreground py-8 text-center">
         Nenhum sorteio gerado ainda. Vá para
-        <NuxtLink to="/play/next-draw" class="text-purple-600 hover:underline">Sugerir Próximo Sorteio</NuxtLink>
+        <NuxtLink to="/play/next-draw" class="text-primary hover:underline">Sugerir Próximo Sorteio</NuxtLink>
         ou
-        <NuxtLink to="/play/scenario" class="text-indigo-600 hover:underline">Caminho de Cenário</NuxtLink>
+        <NuxtLink to="/play/scenario" class="text-primary hover:underline">Caminho de Cenário</NuxtLink>
         para gerar alguns.
       </div>
       <div v-else class="space-y-4">
@@ -247,41 +242,41 @@ watch(activeTab, (tab) => {
           <!-- Next Draw card -->
           <div
             v-if="isNextDraw(item)"
-            class="bg-white rounded-lg border border-gray-200 p-4"
+            class="bg-card rounded-lg border p-4"
           >
             <div class="flex items-start justify-between mb-3">
               <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full">
+                <span class="text-xs font-semibold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
                   Próximo Sorteio
                 </span>
                 <ConfidenceBadge :confidence="item.prediction.confidence" />
               </div>
-              <span class="text-xs text-gray-400">{{ formatDateTime(item.stored_at) }}</span>
+              <span class="text-xs text-muted-foreground">{{ formatDateTime(item.stored_at) }}</span>
             </div>
             <div class="flex flex-wrap gap-1.5 mb-3">
               <span
                 v-for="n in item.prediction.numbers"
                 :key="n"
-                class="w-8 h-8 flex items-center justify-center rounded-full bg-purple-100 text-purple-800 font-bold text-xs"
+                class="w-8 h-8 flex items-center justify-center rounded-full bg-accent text-accent-foreground font-bold text-xs"
               >
                 {{ n }}
               </span>
             </div>
-            <p class="text-xs text-gray-500 line-clamp-2">{{ item.prediction.explanation }}</p>
+            <p class="text-xs text-muted-foreground line-clamp-2">{{ item.prediction.explanation }}</p>
           </div>
 
           <!-- Scenario Path card -->
           <div
             v-else-if="isScenarioPath(item)"
-            class="bg-white rounded-lg border border-gray-200 p-4"
+            class="bg-card rounded-lg border p-4"
           >
             <div class="flex items-start justify-between mb-3">
               <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">
+                <span class="text-xs font-semibold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
                   Cenário ({{ normalizeScenario(item).horizon }} sorteios)
                 </span>
               </div>
-              <span class="text-xs text-gray-400">{{ formatDateTime(item.stored_at) }}</span>
+              <span class="text-xs text-muted-foreground">{{ formatDateTime(item.stored_at) }}</span>
             </div>
             <div class="space-y-2">
               <div
@@ -289,12 +284,12 @@ watch(activeTab, (tab) => {
                 :key="step.step"
                 class="flex items-center gap-3"
               >
-                <span class="text-xs text-indigo-500 font-medium w-12 shrink-0">+{{ step.step }}</span>
+                <span class="text-xs text-primary font-medium w-12 shrink-0">+{{ step.step }}</span>
                 <div class="flex flex-wrap gap-1">
                   <span
                     v-for="n in step.numbers"
                     :key="n"
-                    class="w-7 h-7 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-800 font-bold text-xs"
+                    class="w-7 h-7 flex items-center justify-center rounded-full bg-accent text-accent-foreground font-bold text-xs"
                   >
                     {{ n }}
                   </span>
@@ -307,25 +302,13 @@ watch(activeTab, (tab) => {
 
         <!-- Pagination -->
         <div v-if="predTotalPages > 1" class="flex items-center justify-between mt-2 text-sm">
-          <span class="text-gray-500">
+          <span class="text-muted-foreground">
             Página {{ predPage }} de {{ predTotalPages }}
-            <span class="ml-2 text-gray-400">({{ predTotal }} total)</span>
+            <span class="ml-2 text-muted-foreground/60">({{ predTotal }} total)</span>
           </span>
           <div class="flex gap-2">
-            <button
-              :disabled="predPage <= 1"
-              class="px-3 py-1.5 rounded border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-              @click="loadPredictions(predPage - 1)"
-            >
-              ←
-            </button>
-            <button
-              :disabled="predPage >= predTotalPages"
-              class="px-3 py-1.5 rounded border text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-              @click="loadPredictions(predPage + 1)"
-            >
-              →
-            </button>
+            <Button variant="outline" size="sm" :disabled="predPage <= 1" @click="loadPredictions(predPage - 1)">←</Button>
+            <Button variant="outline" size="sm" :disabled="predPage >= predTotalPages" @click="loadPredictions(predPage + 1)">→</Button>
           </div>
         </div>
       </div>

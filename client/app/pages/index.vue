@@ -1,23 +1,28 @@
+<script setup lang="ts">
+import { Button } from '~/components/ui/button'
+</script>
+
 <template>
-  <div class="text-center py-12">
-    <h1 class="text-3xl font-bold mb-4">Ferramenta de Pesquisa Lotofácil</h1>
-    <p class="text-gray-600 mb-8 max-w-xl mx-auto">
-      Explore estatísticas históricas de sorteios e pesquise padrões. Análise estatística apenas —
-      nenhuma previsão é certa.
-    </p>
+  <div class="text-center py-16 space-y-8">
+    <div class="space-y-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-semibold tracking-wide uppercase">
+        Lotofácil · Análise Estatística
+      </div>
+      <h1 class="text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-[hsl(165,100%,39%)] bg-clip-text text-transparent">
+        Ferramenta de Pesquisa
+      </h1>
+      <p class="text-muted-foreground max-w-xl mx-auto">
+        Explore estatísticas históricas de sorteios e pesquise padrões. Análise estatística apenas —
+        nenhuma previsão é certa.
+      </p>
+    </div>
     <div class="flex justify-center gap-4">
-      <NuxtLink
-        to="/research"
-        class="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-      >
-        Modo Pesquisa
-      </NuxtLink>
-      <NuxtLink
-        to="/play"
-        class="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors"
-      >
-        Modo Jogar
-      </NuxtLink>
+      <Button as-child size="lg">
+        <NuxtLink to="/research">Modo Pesquisa</NuxtLink>
+      </Button>
+      <Button as-child variant="secondary" size="lg">
+        <NuxtLink to="/play">Modo Jogar</NuxtLink>
+      </Button>
     </div>
   </div>
 </template>

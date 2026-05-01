@@ -1,0 +1,49 @@
+:root {
+  /* Backgrounds & text */
+  --background: 210 17% 98%;        /* #F8F9FA off-white */
+  --foreground: 224 37% 16%;        /* #1A2238 deep navy */
+
+  /* Card */
+  --card: 0 0% 100%;
+  --card-foreground: 224 37% 16%;
+
+  /* Primary — Trust Blue #2D5BFF */
+  --primary: 227 100% 59%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary */
+  --secondary: 224 25% 92%;
+  --secondary-foreground: 224 37% 20%;
+
+  /* Muted */
+  --muted: 220 15% 94%;
+  --muted-foreground: 224 15% 50%;
+
+  /* Accent — light tint of trust blue */
+  --accent: 225 70% 93%;
+  --accent-foreground: 227 100% 40%;
+
+  /* Destructive / low-confidence */
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+
+  /* Success / high-confidence — Emerald #00C896 */
+  --success: 165 100% 39%;
+  --success-foreground: 0 0% 100%;
+
+  /* Warning / medium-confidence — Amber #FFB400 */
+  --warning: 42 100% 50%;
+  --warning-foreground: 224 37% 10%;
+
+  /* Borders & inputs */
+  --border: 224 20% 84%;
+  --input: 224 20% 84%;
+  --ring: 227 100% 59%;
+
+  /* Shape */
+  --radius: 0.5rem;
+
+  /* Header navy (used directly in layout) */
+  --navy: #1A2238;
+  --navy-light: #1e2d4a;
+}
