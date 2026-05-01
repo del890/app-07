@@ -104,16 +104,11 @@ export interface PiAlignmentResult {
 // ── Correlations ──────────────────────────────────────────────────────────
 
 export interface CorrelationResult {
-  signal: string
-  metric: string
-  lag_draws: number
-  alignment: string
-  rho: number
-  p_value: number
-  q_value: number | null
   effect_size: number
   sample_size: number
-  test_used: string
+  p_value: number
+  q_value: number | null
+  test: string
   under_powered: boolean
   significant: boolean
   artifact_type: 'research'
@@ -155,6 +150,23 @@ export interface ScenarioPathPrediction {
   path: ScenarioStep[]
   calibrated: boolean
   provenance: PredictionProvenance
+}
+
+// ── Oracle ────────────────────────────────────────────────────────────────
+
+export interface ExtractedSymbol {
+  category: string
+  label: string
+  intensity: number
+}
+
+export interface DreamOracleResult {
+  numbers: number[]
+  explanation: string
+  symbols: ExtractedSymbol[]
+  catalog_version: string
+  artifact_type: 'entertainment'
+  disclaimer: string
 }
 
 // ── SSE streaming events ──────────────────────────────────────────────────
@@ -266,6 +278,15 @@ export interface MyDrawEntry {
   savedAt: string   // ISO datetime
   numbers: number[]
   profile: DrawProfileResponse
+}
+
+export interface DreamOracleEntry {
+  id?: number          // auto-increment primary key (set by IndexedDB)
+  savedAt: string      // ISO datetime
+  numbers: number[]
+  explanation: string
+  symbols: ExtractedSymbol[]
+  catalog_version: string
 }
 
 // ── Ticket scanner ────────────────────────────────────────────────────────

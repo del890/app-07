@@ -15,6 +15,7 @@ from service.api.dataset import router as dataset_router
 from service.api.draws import router as draws_router
 from service.api.errors import ApiError, install_error_handlers
 from service.api.health import router as health_router
+from service.api.oracle import router as oracle_router
 from service.api.predictions import router as predictions_router
 from service.api.statistics import router as statistics_router
 from service.api.sync import router as sync_router
@@ -30,5 +31,6 @@ api_router.include_router(predictions_router, tags=["predictions"])
 api_router.include_router(calibration_router, tags=["calibration"])
 api_router.include_router(sync_router, tags=["admin"])
 api_router.include_router(tickets_router, tags=["tickets"])
+api_router.include_router(oracle_router, tags=["oracle"])
 
 __all__ = ["ApiError", "api_router", "install_error_handlers", "tickets_router"]

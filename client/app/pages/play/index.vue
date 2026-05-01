@@ -34,6 +34,9 @@ async function request() {
       <Button as-child>
         <NuxtLink to="/play/my-draw">Meu Volante</NuxtLink>
       </Button>
+      <Button as-child>
+        <NuxtLink to="/play/dream">Oráculo dos Sonhos</NuxtLink>
+      </Button>
       <Button variant="secondary" as-child>
         <NuxtLink to="/play/history">Histórico</NuxtLink>
       </Button>

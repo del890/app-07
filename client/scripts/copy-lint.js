@@ -15,7 +15,7 @@ import { dirname } from 'node:path'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const appDir = join(__dirname, '..', 'app')
 
-const BANNED = [/\bguaranteed\b/gi, /\bwinning\b/gi, /\bsure\b/gi]
+const BANNED = [/\bguaranteed\b/gi, /\bwinning\b/gi, /\bsure\b/gi, /\bgarantido\b/gi, /\bgarantida\b/gi, /\bcerteza\b/gi]
 const EXTENSIONS = new Set(['.vue', '.ts'])
 
 let violations = 0

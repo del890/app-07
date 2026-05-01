@@ -2,6 +2,7 @@
 import { Button } from '~/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
 import type {
+  DreamOracleEntry,
   DrawsPage,
   HistoricalDraw,
   PredictionHistoryPage,
@@ -13,7 +14,7 @@ import type {
 const { getDraws, getPredictionHistory } = useApi()
 
 // ── Tab state ────────────────────────────────────────────────────────────
-type Tab = 'draws' | 'generated'
+type Tab = 'draws' | 'generated' | 'oracle'
 const activeTab = ref<Tab>('draws')
 
 // ── Historical draws state ────────────────────────────────────────────────
@@ -118,13 +119,43 @@ function formatDateTime(iso: string) {
   })
 }
 
+// ── Oracle dream history ──────────────────────────────────────────────────
+const { listEntries: listOracleEntries, deleteEntry: deleteOracleEntry } = useDreamOracleStore()
+const oracleEntries = ref<DreamOracleEntry[]>([])
+const oracleLoading = ref(false)
+
+async function loadOracleEntries() {
+  oracleLoading.value = true
+  oracleEntries.value = await listOracleEntries()
+  oracleLoading.value = false
+}
+
+async function removeOracleEntry(id: number) {
+  await deleteOracleEntry(id)
+  oracleEntries.value = oracleEntries.value.filter((e) => e.id !== id)
+}
+
+const CATEGORY_LABEL: Record<string, string> = {
+  element: 'Elemento',
+  color: 'Cor',
+  emotion: 'Emoção',
+  archetype: 'Arquétipo',
+  count: 'Número',
+}
+
+function categoryLabel(cat: string): string {
+  return CATEGORY_LABEL[cat] ?? cat
+}
+
 // ── Initialise ────────────────────────────────────────────────────────────
 loadDraws(1)
 loadPredictions(1)
+loadOracleEntries()
 
 watch(activeTab, (tab) => {
   if (tab === 'draws' && draws.value.length === 0) loadDraws(1)
   if (tab === 'generated' && predictions.value.length === 0) loadPredictions(1)
+  if (tab === 'oracle') loadOracleEntries()
 })
 </script>
 
@@ -158,6 +189,16 @@ watch(activeTab, (tab) => {
       >
         Sorteios Gerados
         <span class="ml-1.5 text-xs text-muted-foreground">({{ predTotal }})</span>
+      </button>
+      <button
+        class="px-5 py-2.5 text-sm font-medium border-b-2 transition-colors"
+        :class="activeTab === 'oracle'
+          ? 'border-primary text-primary'
+          : 'border-transparent text-muted-foreground hover:text-foreground'"
+        @click="activeTab = 'oracle'"
+      >
+        Oráculo dos Sonhos
+        <span class="ml-1.5 text-xs text-muted-foreground">({{ oracleEntries.length }})</span>
       </button>
     </div>
 
@@ -309,6 +350,66 @@ watch(activeTab, (tab) => {
           <div class="flex gap-2">
             <Button variant="outline" size="sm" :disabled="predPage <= 1" @click="loadPredictions(predPage - 1)">←</Button>
             <Button variant="outline" size="sm" :disabled="predPage >= predTotalPages" @click="loadPredictions(predPage + 1)">→</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Oracle Dream History tab ──────────────────────────────────── -->
+    <div v-if="activeTab === 'oracle'">
+      <div v-if="oracleLoading" class="text-sm text-muted-foreground">Carregando…</div>
+      <div v-else-if="oracleEntries.length === 0" class="text-sm text-muted-foreground py-8 text-center">
+        Nenhuma interpretação salva ainda. Vá para
+        <NuxtLink to="/play/dream" class="text-primary hover:underline">Oráculo dos Sonhos</NuxtLink>
+        para interpretar um sonho.
+      </div>
+      <div v-else class="space-y-4">
+        <div
+          v-for="entry in oracleEntries"
+          :key="entry.id"
+          class="bg-card rounded-lg border p-4 space-y-3"
+        >
+          <!-- Header -->
+          <div class="flex items-start justify-between">
+            <span class="text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-700 px-2 py-0.5 rounded-full">
+              🌙 Oráculo dos Sonhos
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-muted-foreground">{{ formatDateTime(entry.savedAt) }}</span>
+              <button
+                class="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                title="Remover"
+                @click="removeOracleEntry(entry.id!)"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <!-- Numbers -->
+          <div class="flex flex-wrap gap-1.5">
+            <span
+              v-for="n in [...entry.numbers].sort((a, b) => a - b)"
+              :key="n"
+              class="w-8 h-8 flex items-center justify-center rounded-full bg-accent text-accent-foreground font-bold text-xs"
+            >
+              {{ n }}
+            </span>
+          </div>
+
+          <!-- Explanation -->
+          <p class="text-xs text-muted-foreground line-clamp-2">{{ entry.explanation }}</p>
+
+          <!-- Symbols -->
+          <div v-if="entry.symbols.length" class="flex flex-wrap gap-1.5">
+            <span
+              v-for="(sym, i) in entry.symbols"
+              :key="i"
+              class="text-[10px] px-2 py-0.5 rounded-full border bg-muted/50 capitalize"
+              :title="categoryLabel(sym.category)"
+            >
+              {{ sym.label }} <span class="text-muted-foreground">{{ Math.round(sym.intensity * 100) }}%</span>
+            </span>
           </div>
         </div>
       </div>
