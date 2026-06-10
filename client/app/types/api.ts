@@ -296,3 +296,24 @@ export interface ScannedTicket {
   games: number[][]
 }
 
+// ── Caixa Loterias external API ───────────────────────────────────────────
+
+export interface DrawPremio {
+  descricao: string
+  faixa: number
+  ganhadores: number
+  valorPremio: number
+}
+
+export interface LatestDraw {
+  concurso: number
+  data: string // DD/MM/YYYY
+  dezenas: string[] // sorted, zero-padded
+  dezenasOrdemSorteio: string[] // order they were drawn
+  premiacoes: DrawPremio[]
+  acumulou: boolean
+  proximoConcurso: number
+  dataProximoConcurso: string // DD/MM/YYYY
+  valorEstimadoProximoConcurso: number
+}
+
