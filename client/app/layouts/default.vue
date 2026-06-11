@@ -26,7 +26,7 @@ function switchGame(game: 'lotofacil' | 'megasena') {
           class="text-sm font-medium tracking-widest uppercase hover:opacity-60 transition-opacity"
           style="font-family: var(--mono);"
         >
-          Loterias <span class="opacity-40 normal-case tracking-normal text-xs font-normal">research</span>
+          Loto <span class="opacity-40 normal-case tracking-normal text-xs font-normal">fezinha!</span>
         </NuxtLink>
 
         <!-- Desktop nav — hidden on mobile -->
