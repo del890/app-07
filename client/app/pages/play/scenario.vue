@@ -21,7 +21,7 @@ function start() {
   <div class="space-y-6">
     <div>
       <Button variant="ghost" as-child class="-ml-3 mb-1">
-        <NuxtLink to="/play">← Jogar</NuxtLink>
+        <NuxtLink to="/play">← Voltar</NuxtLink>
       </Button>
       <h1 class="text-2xl font-bold">Caminho de Cenário</h1>
     </div>

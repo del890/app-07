@@ -64,7 +64,7 @@ function switchGame(game: 'lotofacil' | 'megasena') {
               : 'bg-transparent text-foreground border-border hover:border-foreground/40'"
             style="font-family: var(--mono);"
           >
-            Jogar
+            Gerar jogos
           </NuxtLink>
         </nav>
       </div>

@@ -55,15 +55,20 @@ const timelineEvents = computed(() => events.value as any[])
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6 max-w-2xl mx-auto">
     <!-- Header -->
+    <div class="flex">
+      <Button variant="ghost" as-child class="-ml-3 mb-1">
+        <NuxtLink to="/play">← Voltar</NuxtLink>
+      </Button>
+    </div>
     <div>
       <h1 class="text-2xl font-bold mb-1">Oráculo dos Sonhos</h1>
       <p class="text-sm text-muted-foreground">
         Descreva um sonho, pesadelo ou situação que aconteceu. O oráculo interpreta os símbolos e sugere 15 números.
       </p>
       <p class="text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded px-3 py-1.5 mt-2 inline-block">
-        Entretenimento apenas — sem base estatística ou preditiva. Jogue com responsabilidade.
+        A inteligência artificial interpreta seu sonho para sugerir números.
       </p>
     </div>
 

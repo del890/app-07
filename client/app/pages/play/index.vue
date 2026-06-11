@@ -17,11 +17,7 @@ async function request() {
 <template>
   <div class="space-y-6">
     <div>
-      <h1 class="text-2xl font-bold mb-1">Modo Jogar</h1>
-      <p class="text-sm text-muted-foreground">Apenas para fins de pesquisa e entretenimento.</p>
-      <p class="text-xs text-warning-foreground bg-warning/10 border border-warning/30 rounded px-3 py-1.5 mt-2 inline-block">
-        Padrões estatísticos não garantem resultados futuros. Jogue com responsabilidade.
-      </p>
+      <h1 class="text-2xl font-bold mb-1">Minha Área de Jogos</h1>
     </div>
 
     <div class="flex flex-wrap gap-3">
