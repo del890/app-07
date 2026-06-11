@@ -317,3 +317,13 @@ export interface LatestDraw {
   valorEstimadoProximoConcurso: number
 }
 
+// Mega Sena — same live API shape (6 dezenas from 1–60)
+export type MegaSenaDraw = LatestDraw
+
+// Static dataset record (matches mega-sena.json schema)
+export interface MegaSenaRecord {
+  id: number
+  date: string // DD-MM-YYYY
+  numbers: number[] // 6 integers sorted ascending
+}
+

@@ -3,8 +3,21 @@ import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
 import { Card, CardContent, CardHeader } from '~/components/ui/card'
 import type { DrawPremio } from '~/types/api'
+import { useActiveGame } from '~/composables/useActiveGame'
 
-const { draws, pending, error, retry } = useLatestDraws()
+const { activeGame } = useActiveGame()
+
+// Both composables are initialised at setup so data loads for both games upfront
+const { draws: lotofacilDraws, pending: lfPending, error: lfError, retry: lfRetry } = useLatestDraws()
+const { draws: megaSenaDraws, pending: msPending, error: msError, retry: msRetry } = useLatestMegaSenaDraws()
+
+const draws = computed(() => activeGame.value === 'megasena' ? megaSenaDraws.value : lotofacilDraws.value)
+const pending = computed(() => activeGame.value === 'megasena' ? msPending.value : lfPending.value)
+const error = computed(() => activeGame.value === 'megasena' ? msError.value : lfError.value)
+const retry = computed(() => activeGame.value === 'megasena' ? msRetry : lfRetry)
+
+const badgeCount = computed(() => activeGame.value === 'megasena' ? 6 : 15)
+const topPrizeLabel = computed(() => activeGame.value === 'megasena' ? '6 acertos' : '15 acertos')
 
 function topPrize(premiacoes: DrawPremio[]): DrawPremio | undefined {
   return premiacoes.find(p => p.faixa === 1)
@@ -20,7 +33,7 @@ function formatCurrency(value: number): string {
     <!-- Header -->
     <div class="text-center space-y-2">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-semibold tracking-wide uppercase">
-        Lotofácil · Últimos Sorteios
+        {{ activeGame === 'megasena' ? 'Mega Sena' : 'Lotofácil' }} · Últimos Sorteios
       </div>
       <h1 class="text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-[hsl(165,100%,39%)] bg-clip-text text-transparent">
         Resultados Recentes
@@ -35,7 +48,7 @@ function formatCurrency(value: number): string {
         </CardHeader>
         <CardContent class="space-y-3">
           <div class="flex flex-wrap gap-2">
-            <div v-for="i in 15" :key="i" class="w-9 h-9 rounded-full bg-muted" />
+            <div v-for="i in badgeCount" :key="i" class="w-10 h-10 rounded-full bg-muted" />
           </div>
           <div class="h-4 w-48 rounded bg-muted" />
         </CardContent>
@@ -46,7 +59,7 @@ function formatCurrency(value: number): string {
     <div v-else-if="error" class="text-center space-y-4 py-8">
       <p class="text-destructive font-medium">Não foi possível carregar os sorteios.</p>
       <p class="text-muted-foreground text-sm">{{ error.message }}</p>
-      <Button variant="outline" @click="retry">Tentar novamente</Button>
+      <Button variant="outline" @click="retry()">Tentar novamente</Button>
     </div>
 
     <!-- Draw cards -->
@@ -76,7 +89,7 @@ function formatCurrency(value: number): string {
           </div>
           <!-- Top prize info -->
           <div v-if="topPrize(draw.premiacoes)" class="text-sm text-muted-foreground flex items-center gap-2">
-            <span>15 acertos:</span>
+            <span>{{ topPrizeLabel }}:</span>
             <span class="font-medium text-foreground">
               {{ topPrize(draw.premiacoes)!.ganhadores }}
               {{ topPrize(draw.premiacoes)!.ganhadores === 1 ? 'ganhador' : 'ganhadores' }}
@@ -88,15 +101,6 @@ function formatCurrency(value: number): string {
         </CardContent>
       </Card>
     </div>
-
-    <!-- Navigation -->
-    <div class="flex justify-center gap-4 pt-2">
-      <Button as-child size="lg">
-        <NuxtLink to="/research">Modo Pesquisa</NuxtLink>
-      </Button>
-      <Button as-child variant="secondary" size="lg">
-        <NuxtLink to="/play">Modo Jogar</NuxtLink>
-      </Button>
-    </div>
   </div>
 </template>
+
