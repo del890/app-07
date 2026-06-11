@@ -16,7 +16,7 @@ function formatCurrency(value: number): string {
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto py-10 space-y-8 px-4">
+  <div class="max-w-2xl sm:max-w-3xl mx-auto py-6 sm:py-10 space-y-8 px-0">
     <!-- Header -->
     <div class="text-center space-y-2">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-semibold tracking-wide uppercase">
@@ -69,7 +69,7 @@ function formatCurrency(value: number): string {
             <span
               v-for="num in draw.dezenas"
               :key="num"
-              class="w-9 h-9 flex items-center justify-center rounded-full font-bold text-sm bg-primary text-primary-foreground"
+              class="w-10 h-10 flex items-center justify-center rounded-full font-bold text-sm bg-primary text-primary-foreground"
             >
               {{ parseInt(num) }}
             </span>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { PredictionProvenance } from '~/types/api'
 import { normalizePredictionExplanation } from '~/composables/usePredictionExplanation'
-import { Card, CardContent, CardHeader } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
 
 const props = defineProps<{
@@ -24,9 +23,9 @@ const explanationView = computed(() => normalizePredictionExplanation(props.expl
 </script>
 
 <template>
-  <Card>
-    <CardHeader class="pb-3">
-      <!-- Header -->
+  <div class="space-y-4">
+    <!-- Header -->
+    <div class="pb-3 border-b border-border">
       <div class="flex items-center gap-3">
         <Badge v-if="label" variant="secondary" class="text-primary font-semibold">
           {{ label }}
@@ -34,9 +33,9 @@ const explanationView = computed(() => normalizePredictionExplanation(props.expl
         <h2 v-else class="font-semibold text-lg">Números Sugeridos</h2>
         <ConfidenceBadge :confidence="confidence" />
       </div>
-    </CardHeader>
+    </div>
 
-    <CardContent class="space-y-4">
+    <div class="space-y-4">
       <!-- Staggered number bubbles -->
       <TransitionGroup
         name="numbers"
@@ -127,8 +126,8 @@ const explanationView = computed(() => normalizePredictionExplanation(props.expl
         Conjunto de dados: {{ provenance.dataset_hash.slice(0, 12) }}
         · {{ provenance.computed_at }}
       </div>
-    </CardContent>
-  </Card>
+    </div>
+  </div>
 </template>
 
 <style scoped>

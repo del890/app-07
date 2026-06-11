@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Badge } from '~/components/ui/badge'
-
 const route = useRoute()
 
 const mode = computed<'research' | 'play'>(() => {
@@ -10,54 +8,87 @@ const mode = computed<'research' | 'play'>(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-background text-foreground" style="background-image: radial-gradient(ellipse at 10% 0%, hsl(227 100% 59% / 0.05) 0%, transparent 50%), radial-gradient(ellipse at 90% 100%, hsl(165 100% 39% / 0.04) 0%, transparent 50%)">
+  <div class="min-h-screen flex flex-col bg-background text-foreground">
     <!-- Header -->
-    <header class="sticky top-0 z-50 border-b border-white/10" style="background: linear-gradient(160deg, #1A2238 0%, #1e2d4a 60%, #1d3050 100%); backdrop-filter: blur(12px);">
+    <header class="sticky top-0 z-50 bg-background border-b border-border">
       <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <NuxtLink to="/" class="text-xl font-bold tracking-tight text-white hover:text-blue-300 transition-colors">
-          Lotofácil Research
+        <NuxtLink
+          to="/"
+          class="text-sm font-medium tracking-widest uppercase hover:opacity-60 transition-opacity"
+          style="font-family: var(--mono);"
+        >
+          Lotofácil <span class="opacity-40 normal-case tracking-normal text-xs font-normal">research</span>
         </NuxtLink>
 
-        <!-- Mode indicator -->
-        <nav class="flex items-center gap-2">
+        <!-- Desktop mode nav — hidden on mobile -->
+        <nav class="hidden sm:flex items-center gap-1">
           <NuxtLink
             to="/research"
-            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all"
+            class="px-4 py-1.5 rounded-full border text-[11px] font-medium uppercase tracking-wider transition-all"
             :class="mode === 'research'
-              ? 'bg-white/15 text-white border border-white/25 shadow-sm'
-              : 'text-white/60 hover:text-white hover:bg-white/10 border border-transparent'"
+              ? 'bg-foreground text-background border-foreground'
+              : 'bg-transparent text-foreground border-border hover:border-foreground/40'"
+            style="font-family: var(--mono);"
           >
             Pesquisa
-            <Badge v-if="mode === 'research'" class="ml-1 text-xs py-0 px-1.5 bg-blue-400/25 text-blue-200 border-0">ativo</Badge>
           </NuxtLink>
           <NuxtLink
             to="/play"
-            class="px-4 py-1.5 rounded-full text-sm font-medium transition-all"
+            class="px-4 py-1.5 rounded-full border text-[11px] font-medium uppercase tracking-wider transition-all"
             :class="mode === 'play'
-              ? 'bg-white/15 text-white border border-white/25 shadow-sm'
-              : 'text-white/60 hover:text-white hover:bg-white/10 border border-transparent'"
+              ? 'bg-foreground text-background border-foreground'
+              : 'bg-transparent text-foreground border-border hover:border-foreground/40'"
+            style="font-family: var(--mono);"
           >
             Jogar
-            <Badge v-if="mode === 'play'" class="ml-1 text-xs py-0 px-1.5 bg-blue-400/25 text-blue-200 border-0">ativo</Badge>
           </NuxtLink>
         </nav>
       </div>
     </header>
 
-    <!-- Aviso de pesquisa / entretenimento (sempre visível) -->
-    <div class="bg-warning/10 border-b border-warning/30 px-4 py-2 text-center text-xs text-warning-foreground">
-      Apenas para fins de pesquisa e entretenimento. Análise estatística não prevê resultados
-      futuros da loteria. Jogue com responsabilidade.
-    </div>
-
-    <!-- Main content -->
-    <main class="flex-1 max-w-6xl mx-auto w-full px-4 py-6">
+    <!-- Main content — extra bottom padding on mobile to clear tab bar -->
+    <main class="flex-1 max-w-6xl mx-auto w-full px-3 sm:px-4 py-6 pb-20 sm:pb-6">
       <slot />
     </main>
 
-    <!-- Rodapé -->
-    <footer class="py-4 text-center text-xs text-muted-foreground border-t border-border" style="background: linear-gradient(160deg, #1A2238 0%, #1e2d4a 100%); color: rgba(255,255,255,0.5);">
+    <!-- Footer -->
+    <footer
+      class="py-3 text-center border-t border-border text-muted-foreground text-[10px] tracking-wider uppercase"
+      style="font-family: var(--mono);"
+    >
       Ferramenta de Pesquisa Lotofácil — não é afiliada à Caixa Econômica Federal.
     </footer>
+
+    <!-- Mobile bottom tab bar — visible only on small screens -->
+    <nav
+      class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-background border-t border-border flex"
+      style="padding-bottom: env(safe-area-inset-bottom, 0px);"
+    >
+      <NuxtLink
+        to="/research"
+        class="flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[56px] transition-colors border-t-2 text-[10px] uppercase tracking-wider font-medium"
+        :class="mode === 'research' ? 'text-foreground border-foreground' : 'text-muted-foreground border-transparent'"
+        style="font-family: var(--mono);"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+          <rect x="3" y="3" width="18" height="18" rx="2" />
+          <path d="M3 9h18M9 3v18" />
+        </svg>
+        Pesquisa
+      </NuxtLink>
+      <NuxtLink
+        to="/play"
+        class="flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[56px] transition-colors border-t-2 text-[10px] uppercase tracking-wider font-medium"
+        :class="mode === 'play' ? 'text-foreground border-foreground' : 'text-muted-foreground border-transparent'"
+        style="font-family: var(--mono);"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <path d="M8 21h8M12 17v4" />
+        </svg>
+        Jogar
+      </NuxtLink>
+    </nav>
   </div>
 </template>
+

@@ -1,49 +1,67 @@
 :root {
+  /* ── Palette ──────────────────────────────────────────────────────────────
+     Deep Forest Green  #1B3022  → 140 28% 15%   primary text / shapes
+     Muted Sage         #8A9A8B  → 124  7% 57%   borders / soft accents
+     Velvet Charcoal    #262626  → 0    0% 15%   deep shadow surfaces
+     Warm Cream         #F5F5F0  → 60  20% 95%   main background
+     Champagne Gold     #C5A059  → 39  48% 56%   buttons / active states
+  ─────────────────────────────────────────────────────────────────────────── */
+
   /* Backgrounds & text */
-  --background: 210 17% 98%;        /* #F8F9FA off-white */
-  --foreground: 224 37% 16%;        /* #1A2238 deep navy */
+  --background: 60 20% 95%;         /* Warm Cream #F5F5F0 */
+  --foreground: 140 28% 15%;        /* Deep Forest Green #1B3022 */
 
-  /* Card */
+  /* Card — pure white lifts off the cream background */
   --card: 0 0% 100%;
-  --card-foreground: 224 37% 16%;
+  --card-foreground: 140 28% 15%;
 
-  /* Primary — Trust Blue #2D5BFF */
-  --primary: 227 100% 59%;
-  --primary-foreground: 0 0% 100%;
+  /* Primary — Champagne Gold #C5A059 */
+  --primary: 39 48% 56%;
+  --primary-foreground: 140 28% 15%; /* Forest green text on gold */
 
-  /* Secondary */
-  --secondary: 224 25% 92%;
-  --secondary-foreground: 224 37% 20%;
+  /* Secondary — light sage tint */
+  --secondary: 124 7% 88%;
+  --secondary-foreground: 140 28% 15%;
 
   /* Muted */
-  --muted: 220 15% 94%;
-  --muted-foreground: 224 15% 50%;
+  --muted: 60 12% 93%;              /* warm-tinted near-cream */
+  --muted-foreground: 140 12% 42%; /* readable muted forest-green */
 
-  /* Accent — light tint of trust blue */
-  --accent: 225 70% 93%;
-  --accent-foreground: 227 100% 40%;
+  /* Accent — very light sage */
+  --accent: 124 7% 92%;
+  --accent-foreground: 140 28% 15%;
 
   /* Destructive / low-confidence */
-  --destructive: 0 84.2% 60.2%;
+  --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 98%;
 
-  /* Success / high-confidence — Emerald #00C896 */
+  /* Success / high-confidence — Emerald */
   --success: 165 100% 39%;
   --success-foreground: 0 0% 100%;
 
-  /* Warning / medium-confidence — Amber #FFB400 */
-  --warning: 42 100% 50%;
-  --warning-foreground: 224 37% 10%;
+  /* Warning / medium-confidence — Amber */
+  --warning: 38 90% 48%;
+  --warning-foreground: 140 28% 15%; /* forest green on amber */
 
-  /* Borders & inputs */
-  --border: 224 20% 84%;
-  --input: 224 20% 84%;
-  --ring: 227 100% 59%;
+  /* Borders & inputs — Muted Sage tone */
+  --border: 124 8% 78%;
+  --input: 124 8% 78%;
+  --ring: 39 48% 56%;               /* Champagne Gold focus ring */
+
+  /* Subtle panel dividers — forest-green tinted */
+  --rule: rgba(27, 48, 34, 0.12);
+  --rule-2: rgba(27, 48, 34, 0.25);
+
+  /* UI-chrome monospace */
+  --mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Shape */
   --radius: 0.5rem;
 
-  /* Header navy (used directly in layout) */
-  --navy: #1A2238;
-  --navy-light: #1e2d4a;
+  /* Named palette tokens for direct use */
+  --forest-green: #1B3022;
+  --muted-sage: #8A9A8B;
+  --velvet-charcoal: #262626;
+  --warm-cream: #F5F5F0;
+  --champagne-gold: #C5A059;
 }
