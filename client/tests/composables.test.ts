@@ -104,17 +104,17 @@ describe('ConfidenceBadge', () => {
 
   it('applies green class for high confidence', () => {
     const w = mount(ConfidenceBadge, { props: { confidence: 0.8 } })
-    expect(w.html()).toContain('bg-green-100')
+    expect(w.html()).toContain('bg-success/15')
   })
 
   it('applies yellow class for medium confidence', () => {
     const w = mount(ConfidenceBadge, { props: { confidence: 0.5 } })
-    expect(w.html()).toContain('bg-yellow-100')
+    expect(w.html()).toContain('bg-warning/15')
   })
 
   it('applies red class for low confidence', () => {
     const w = mount(ConfidenceBadge, { props: { confidence: 0.2 } })
-    expect(w.html()).toContain('bg-red-100')
+    expect(w.html()).toContain('bg-destructive/15')
   })
 })
 
