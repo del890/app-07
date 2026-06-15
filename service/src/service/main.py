@@ -47,11 +47,12 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
     ingest_from_settings(settings)
 
     # Auto-calibrate on startup so Play mode is available without manual steps.
+    # Run in the background so the lifespan completes and the service starts
+    # serving requests immediately — calibration can take 30-60 s on large datasets.
     _history = get_cached_history()
     if _history is not None:
         startup_log.info("calibration.startup.begin")
-        await asyncio.to_thread(run_calibration, _history)
-        startup_log.info("calibration.startup.done")
+        asyncio.get_event_loop().run_in_executor(None, run_calibration, _history)
     else:
         startup_log.warning("calibration.startup.skipped", extra={"reason": "ingestion not ready"})
 
