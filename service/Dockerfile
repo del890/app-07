@@ -1,16 +1,15 @@
 # Use a slim image for smaller production footprints
 FROM python:3.11-slim
 
+# Copy the UV binary from the official image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/
+
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
-COPY service/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application code and install the package
+# Copy application code and install the dependencies
 COPY service/ .
-RUN pip install --no-cache-dir .
+RUN uv sync --no-cache --no-dev
 
 # Copy dataset files from the project root
 COPY data.json data.json
@@ -23,7 +22,8 @@ ENV DATA_JSON_PATH=/app/data.json
 EXPOSE 8000
 
 # Use Gunicorn as the entry point, using Uvicorn as the worker class
-CMD ["gunicorn", "service.main:app", \
+
+CMD ["uv", "run", "gunicorn", "service.main:app", \
      "-w", "1", \
      "-k", "uvicorn.workers.UvicornWorker", \
      "--bind", "0.0.0.0:8000"]

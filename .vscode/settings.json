@@ -12,5 +12,25 @@
     "mkdir": true,
     "npm run lint": true,
     "npx eslint": true
-  }
+  },
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#477f4f",
+    "activityBar.background": "#477f4f",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e799",
+    "activityBarBadge.background": "#403966",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#e7e7e799",
+    "sash.hoverBorder": "#477f4f",
+    "statusBar.background": "#355e3b",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#477f4f",
+    "statusBarItem.remoteBackground": "#355e3b",
+    "statusBarItem.remoteForeground": "#e7e7e7",
+    "titleBar.activeBackground": "#355e3b",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#355e3b99",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  "peacock.color": "#355e3b"
 }
