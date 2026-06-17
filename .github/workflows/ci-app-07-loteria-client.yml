@@ -1,4 +1,4 @@
-name: Deploy to Elastic Beanstalk
+name: Build client deploy artifact
 
 on:
   push:
@@ -7,23 +7,32 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1. Zip up your frontend code along with your Dockerfile
-      # (Exclude standard unneeded files like node_modules or git folders to keep it light)
-      - name: Generate deployment package
-        run: zip -r deploy.zip . -x "*.git*" "node_modules/*"
-
-      # 2. Deploy directly to Elastic Beanstalk
-      - name: Deploy to AWS Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v22
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: "frontend"
-          environment_name: "Frontend-env"
-          version_label: "frontend-${{ github.sha }}"
-          region: "us-east-2" # Change to your AWS region
-          deployment_package: deploy.zip
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        run: npm ci
+
+      - name: Run client tests
+        run: npm test
+
+      - name: Generate static deployment bundle
+        run: npm run generate
+
+      - name: Upload static site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-static-site
+          path: client/.output/public
+          if-no-files-found: error
