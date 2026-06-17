@@ -10,4 +10,5 @@ COPY . .
 RUN npm run generate
 
 FROM nginx:latest
+EXPOSE 80
 COPY --from=generator /app/dist /usr/share/nginx/html
