@@ -3,28 +3,43 @@ name: Deploy to Elastic Beanstalk
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
+    name: Build static files
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 1. Zip up your frontend code along with your Dockerfile
-      # (Exclude standard unneeded files like node_modules or git folders to keep it light)
-      - name: Generate deployment package
-        run: zip -r deploy.zip . -x "*.git*" "node_modules/*"
+      - name: Build Loteria client app image
+        run: docker build -t client-build ./client
 
-      # 2. Deploy directly to Elastic Beanstalk
-      - name: Deploy to AWS Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v22
+      - name: Extract generated files
+        run: |
+          docker create --name extract client-build
+          docker cp extract:/usr/share/nginx/html ./dist
+          docker rm extract
+          zip -r client-dist-${{ github.sha }}.zip dist/
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: "frontend"
-          environment_name: "Frontend-env"
-          version_label: "frontend-${{ github.sha }}"
-          region: "us-east-2" # Change to your AWS region
-          deployment_package: deploy.zip
+          name: client-dist-${{ github.sha }}
+          path: client-dist-${{ github.sha }}.zip
+          retention-days: 7
+  deploy:
+
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/download-artifact@v4.1.7
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-region: us-east-2
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
