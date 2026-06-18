@@ -18,16 +18,9 @@ jobs:
         run: docker build -t client-build ./client
 
       - name: Package build for Elastic Beanstalk
-        run: |
-          mkdir -p deploy
-          docker create --name extract client-build
-          docker cp extract:/usr/share/nginx/html ./deploy/dist
-          docker rm extract
-          cp client/Dockerfile.eb deploy/Dockerfile
-          cd deploy && zip -r ../${{ github.run_id }}.zip .
+        run: zip -r ${{ github.run_id }}.zip . -x '*.git*'
 
       - name: Deploy to EB
-        if: github.event_name != 'pull_request'
         uses: einaregilsson/beanstalk-deploy@v18
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
