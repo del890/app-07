@@ -22,30 +22,50 @@ jobs:
           docker create --name extract client-build
           docker cp extract:/usr/share/nginx/html ./dist
           docker rm extract
-          zip -r client-dist-${{ github.sha }}.zip dist/
+          zip -r ${{ github.run_id }}.zip dist/
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: client-dist-${{ github.sha }}
-          path: client-dist-${{ github.sha }}.zip
+          name: deploy-artifact
+          path: ${{ github.run_id }}.zip
           retention-days: 7
-  deploy:
 
+  deploy:
     runs-on: ubuntu-latest
     needs: build
 
     steps:
-    - uses: actions/download-artifact@v4.1.7
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: us-east-2
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    - name: Deploy to Elastic Beanstalk
-      run: |
-        aws s3 cp "deploy-files/${{github.run_id}}.zip" s3://elasticbeanstalk-us-east-2-${{ secrets.AWS_ACCOUNT_ID }}/artifact/${{github.run_id}}/
-        aws elasticbeanstalk create-application-version --application-name $ELASTIC_BEANSTALK_NAME --version-label ${{github.run_id}} --description ${{github.run_id}} --source-bundle S3Bucket="elasticbeanstalk-us-east-2-${{ secrets.AWS_ACCOUNT_ID }}",S3Key="artifact/dotnet-mvc-app/${{github.run_id}}.zip"
-        aws elasticbeanstalk update-environment --application-name $ELASTIC_BEANSTALK_NAME --environment-name $ELASTIC_BEANSTALK_ENV_NAME --version-label ${{github.run_id}}
-        aws elasticbeanstalk wait environment-updated --application-name $ELASTIC_BEANSTALK_NAME --environment-name $ELASTIC_BEANSTALK_ENV_NAME
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy-artifact
+          path: deploy-files
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Deploy to Elastic Beanstalk
+        env:
+          S3_BUCKET: elasticbeanstalk-us-east-2-${{ secrets.AWS_ACCOUNT_ID }}
+          S3_KEY: artifact/${{ github.run_id }}/${{ github.run_id }}.zip
+          EB_APP: ${{ secrets.ELASTIC_BEANSTALK_APP_NAME }}
+          EB_ENV: ${{ secrets.ELASTIC_BEANSTALK_ENV_NAME }}
+        run: |
+          aws s3 cp "deploy-files/${{ github.run_id }}.zip" "s3://$S3_BUCKET/$S3_KEY"
+          aws elasticbeanstalk create-application-version \
+            --application-name "$EB_APP" \
+            --version-label "${{ github.run_id }}" \
+            --description "${{ github.run_id }}" \
+            --source-bundle S3Bucket="$S3_BUCKET",S3Key="$S3_KEY"
+          aws elasticbeanstalk update-environment \
+            --application-name "$EB_APP" \
+            --environment-name "$EB_ENV" \
+            --version-label "${{ github.run_id }}"
+          aws elasticbeanstalk wait environment-updated \
+            --application-name "$EB_APP" \
+            --environment-name "$EB_ENV"
