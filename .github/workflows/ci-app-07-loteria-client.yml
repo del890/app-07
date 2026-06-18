@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build static files
+  build-and-deploy:
+    name: Build and deploy client
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,7 +17,7 @@ jobs:
       - name: Build Loteria client app image
         run: docker build -t client-build ./client
 
-      - name: Extract generated files
+      - name: Package build for Elastic Beanstalk
         run: |
           mkdir -p deploy
           docker create --name extract client-build
@@ -26,19 +26,8 @@ jobs:
           cp client/Dockerfile.eb deploy/Dockerfile
           cd deploy && zip -r ../${{ github.run_id }}.zip .
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.event_name != 'pull_request'
-
-    steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: deploy-artifact
-          path: deploy-files
-
       - name: Deploy to EB
+        if: github.event_name != 'pull_request'
         uses: einaregilsson/beanstalk-deploy@v18
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -48,4 +37,4 @@ jobs:
           existing_bucket_name: elasticbeanstalk-us-east-2-697697503646
           region: us-east-2
           version_label: ${{ github.sha }}
-          deployment_package: deploy-files/${{ github.run_id }}.zip
+          deployment_package: ${{ github.run_id }}.zip
