@@ -19,20 +19,20 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }} # Use a personal access token from Docker Hub
 
       # 2. Build the image and push it to Docker Hub
-      # Note the tag format: your_dockerhub_username/repository_name:tag
+      # Note the tag format: your_DOCKER_USERNAME/repository_name:tag
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./client
           file: ./client/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/loteria-client:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/loteria-client:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/loteria-client:latest
+            ${{ secrets.DOCKER_USERNAME }}/loteria-client:${{ github.sha }}
 
       # 3. Create a dynamic deployment configuration file for AWS
       # This tells Elastic Beanstalk to pull the exact image we just pushed
@@ -42,7 +42,7 @@ jobs:
           {
             "AWSEBDockerrunVersion": "1",
             "Image": {
-              "Name": "${{ secrets.DOCKERHUB_USERNAME }}/loteria-client:${{ github.sha }}",
+              "Name": "${{ secrets.DOCKER_USERNAME }}/loteria-client:${{ github.sha }}",
               "Update": "true"
             },
             "Ports": [
