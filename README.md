@@ -6,7 +6,7 @@ Two services joined by an HTTP API:
 - [`service/`](service/) — Python 3.11+, FastAPI, agent-first (Anthropic Claude) backend that owns data ingestion, statistical analysis, external-signal correlation, and the prediction engine.
 - [`client/`](client/) — Nuxt 3 + TypeScript (strict) research/play UI.
 
-The dataset lives in [`data.json`](data.json) at the repo root and is treated as immutable input.
+The dataset lives in [`service/data/data.json`](service/data/data.json) and is treated as immutable input.
 All design, specs, and tasks are tracked in [`openspec/`](openspec/) — see the active change
 [`openspec/changes/build-lotofacil-webapp/`](openspec/changes/build-lotofacil-webapp/).
 

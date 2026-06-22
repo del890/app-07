@@ -73,7 +73,7 @@ Single-node, reverse-proxy-friendly. Recommended stack: nginx → uvicorn.
 | `ANTHROPIC_API_KEY` | **yes** | — | Anthropic API key; service refuses to start without it |
 | `ENV` | no | `dev` | `dev` / `staging` / `prod` |
 | `LOG_LEVEL` | no | `INFO` | `DEBUG` / `INFO` / `WARNING` / `ERROR` |
-| `DATA_JSON_PATH` | no | `../data.json` | Path to the draw dataset |
+| `DATA_JSON_PATH` | no | `service/data/data.json` | Path to the draw dataset |
 | `PREDICTIONS_RATE_LIMIT_PER_MINUTE` | no | `10` | Per-IP rate limit on `/v1/predictions/*` |
 | `LLM_MONTHLY_SPEND_CAP_USD` | no | `50.0` | Advisory cap (not enforced server-side) |
 | `CALIBRATION_STALE_AFTER_DAYS` | no | `14` | Days before calibration is considered stale |
@@ -89,8 +89,8 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 RUN pip install uv && uv sync --no-dev
 COPY src/ src/
-COPY ../data.json data.json
-ENV DATA_JSON_PATH=/app/data.json
+COPY data/data.json data/data.json
+ENV DATA_JSON_PATH=/app/data/data.json
 CMD ["uv", "run", "uvicorn", "service.main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 

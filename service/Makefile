@@ -7,10 +7,10 @@ run-dev:
 	uv run uvicorn service.main:app --reload --port 8000
 
 build:
-	docker build -f Dockerfile -t del890/app-007-service ..
+	docker build -f Dockerfile -t del890/app-007-service .
 
 run:
-	docker run -d -p 8000:8000 --env-file ../.env -e DATA_JSON_PATH=/app/data.json --name app-007-service del890/app-007-service
+	docker run -d -p 8000:8000 --env-file ./.env --name app-007-service del890/app-007-service
 
 clean:
 	docker rm -f app-007-service

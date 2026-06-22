@@ -11,7 +11,7 @@ import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const OUT_PATH = resolve(__dirname, '../../mega-sena.json')
+const OUT_PATH = resolve(__dirname, '../../service/data/mega-sena.json')
 const API_URL = 'https://loteriascaixa-api.herokuapp.com/api/megasena'
 
 console.log('Fetching Mega Sena history from', API_URL)

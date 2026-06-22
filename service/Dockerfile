@@ -8,15 +8,12 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/
 WORKDIR /app
 
 # Copy application code and install the dependencies
-COPY service/ .
+COPY . .
 RUN uv sync --no-cache --no-dev
 
-# Copy dataset files from the project root
-COPY data.json data.json
-COPY mega-sena.json mega-sena.json
-
+# Dataset files live inside the service data folder and are copied with the service sources.
 # Tell the service where to find the dataset
-ENV DATA_JSON_PATH=/app/data.json
+ENV DATA_JSON_PATH=/app/data/data.json
 
 # Expose the port
 EXPOSE 8000

@@ -1,42 +1,71 @@
-name: Deploy Service API to Elastic Beanstalk
+name: Deploy to Elastic Beanstalk
 
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
 
-env:
-  ELASTIC_BEANSTALK_NAME: backend
-  ELASTIC_BEANSTALK_ENV_NAME: Backend-env
-
-
 jobs:
-  deploy:
+  build-and-deploy:
+    name: Build and deploy client
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-      - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker build -t del890/app-07-service -f service/Dockerfile .
-      # - run: docker run -e CI=true del890/app-07-service npm test
 
-      - name: Generate deployment package
-        run: zip -r deploy.zip . -x '*.git*'
+      # 1. Log in to Docker Hub using GitHub Secrets
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }} # Use a personal access token from Docker Hub
 
+      # 2. Build the image and push it to Docker Hub
+      # Note the tag format: your_DOCKER_USERNAME/repository_name:tag
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./service
+          file: ./service/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/loteria-service:latest
+            ${{ secrets.DOCKER_USERNAME }}/loteria-service:${{ github.sha }}
 
-      # 2. Deploy directly to Elastic Beanstalk
-      - name: Deploy to AWS Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v22
+      # 3. Create a dynamic deployment configuration file for AWS
+      # This tells Elastic Beanstalk to pull the exact image we just pushed
+      - name: Create Beanstalk Deployment Configuration
+        run: |
+          cat <<EOF > Dockerrun.aws.json
+          {
+            "AWSEBDockerrunVersion": "1",
+            "Image": {
+              "Name": "${{ secrets.DOCKER_USERNAME }}/loteria-client:${{ github.sha }}",
+              "Update": "true"
+            },
+            "Ports": [
+              {
+                "ContainerPort": 8000
+              }
+            ]
+          }
+          EOF
+
+      # 4. Zip ONLY the Dockerrun.aws.json file (no source code needed anymore!)
+      - name: Package configuration for Elastic Beanstalk
+        run: zip ${{ github.run_id }}.zip Dockerrun.aws.json
+
+      # 5. Deploy the lightweight zip to AWS Elastic Beanstalk
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v22 # Updated to v22 for security/node compatibility updates
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: "backend"
-          environment_name: "Backend-env"
-          version_label: "backend-${{ github.sha }}"
-          region: "us-east-2"
-          deployment_package: deploy.zip
-
-
-
-
-
+          application_name: frontend
+          environment_name: Frontend-env
+          existing_bucket_name: elasticbeanstalk-us-east-2-697697503646
+          region: us-east-2
+          version_label: ${{ github.sha }}
+          deployment_package: ${{ github.run_id }}.zip

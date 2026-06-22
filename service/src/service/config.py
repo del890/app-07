@@ -20,13 +20,13 @@ LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR"]
 
 def _default_data_json() -> Path:
     """Default location of data.json, resolved once at import."""
-    # service/src/service/config.py -> service/ -> repo root
-    return Path(__file__).resolve().parents[3] / "data.json"
+    # service/src/service/config.py -> service/ -> service/data
+    return Path(__file__).resolve().parents[2] / "data" / "data.json"
 
 
 def _default_env_file() -> Path:
     """Resolve .env from the repo root (service/src/service/ -> repo root)."""
-    return Path(__file__).resolve().parents[3] / ".env"
+    return Path(__file__).resolve().parents[2] / ".env"
 
 
 class Settings(BaseSettings):
