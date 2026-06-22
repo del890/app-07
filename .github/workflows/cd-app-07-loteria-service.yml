@@ -1,0 +1,42 @@
+name: Deploy Service API to Elastic Beanstalk
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  ELASTIC_BEANSTALK_NAME: backend
+  ELASTIC_BEANSTALK_ENV_NAME: Backend-env
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker build -t del890/app-07-service -f service/Dockerfile .
+      # - run: docker run -e CI=true del890/app-07-service npm test
+
+      - name: Generate deployment package
+        run: zip -r deploy.zip . -x '*.git*'
+
+
+      # 2. Deploy directly to Elastic Beanstalk
+      - name: Deploy to AWS Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: "backend"
+          environment_name: "Backend-env"
+          version_label: "backend-${{ github.sha }}"
+          region: "us-east-2"
+          deployment_package: deploy.zip
+
+
+
+
+
