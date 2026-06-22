@@ -1,4 +1,4 @@
-name: Deploy to Elastic Beanstalk
+name: Deploy Client UI to Elastic Beanstalk
 
 on:
   push:
