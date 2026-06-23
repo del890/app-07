@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+console.log("DENTRO DO DOCKER - API_BASE:", process.env.NUXT_PUBLIC_API_BASE)
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
