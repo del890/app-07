@@ -17,4 +17,4 @@ clean:
 	docker rmi -f del890/app-007-service
 
 test:
-	@echo "Running tests..."
+	@echo "Running tests on service..."
