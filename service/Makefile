@@ -4,9 +4,11 @@ install:
 	uv sync
 
 run-dev:
+	@echo "Running service..."
 	uv run uvicorn service.main:app --reload --port 8000
 
 build:
+	@echo "Building service..."
 	docker build -f Dockerfile -t del890/app-007-service .
 
 run:
