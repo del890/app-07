@@ -1,0 +1,55 @@
+# nginx site config for the Loteria UI container.
+#
+# This file is an envsubst *template*: the official nginx image runs
+# `envsubst` over /etc/nginx/templates/*.template at container start and writes
+# the result to /etc/nginx/conf.d/default.conf. Only ${BACKEND_URL} is
+# substituted from the environment; nginx runtime variables ($host, $uri, ...)
+# are not env vars, so they pass through untouched.
+#
+# Set BACKEND_URL as an Elastic Beanstalk environment property on the UI
+# environment, e.g.:
+#   BACKEND_URL=https://your-service-env.us-east-2.elasticbeanstalk.com
+
+server {
+    listen 80;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # SPA history-mode fallback: serve static assets, otherwise index.html.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Reverse-proxy the API (and SSE streams) to the backend service.
+    #
+    # BACKEND_URL is assigned to a variable and proxy_pass uses that variable so
+    # nginx re-resolves the upstream via `resolver` at runtime instead of
+    # caching one IP at startup. This survives ALB IP rotation on EB and lets
+    # the container boot even if the host is momentarily unresolvable.
+    # ${NGINX_LOCAL_RESOLVERS} is populated by the base image entrypoint from
+    # the container's /etc/resolv.conf. $request_uri preserves the full /v1/...
+    # path + query that the variable form of proxy_pass would otherwise drop.
+    location /v1/ {
+        resolver ${NGINX_LOCAL_RESOLVERS} valid=30s;
+        set $backend "${BACKEND_URL}";
+        proxy_pass $backend$request_uri;
+        proxy_http_version 1.1;
+        proxy_set_header Host $proxy_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Honor the upstream's TLS SNI when BACKEND_URL is https.
+        proxy_ssl_server_name on;
+
+        # Server-Sent Events: disable buffering/caching and allow long-lived
+        # connections so prediction streams flush token-by-token.
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+        chunked_transfer_encoding off;
+    }
+}

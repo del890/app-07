@@ -1,3 +1,6 @@
 FROM nginx:latest
 EXPOSE 80
+ENV BACKEND_URL=http://localhost:5000
+ENV NGINX_ENTRYPOINT_LOCAL_RESOLVERS=1
+COPY default.conf.template /etc/nginx/templates/default.conf.template
 COPY dist /usr/share/nginx/html

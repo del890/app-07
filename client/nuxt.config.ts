@@ -1,6 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
-console.log("DENTRO DO DOCKER - API_BASE:", process.env.NUXT_PUBLIC_API_BASE)
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -35,7 +34,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: '',
+      // Production (EB): leave empty so API calls hit relative `/v1/...` on the
+      // UI origin, where nginx proxies them to the backend service (see
+      // client/default.conf.template). Local dev: set NUXT_PUBLIC_API_BASE in
+      // client/.env to point directly at the service (no nginx proxy locally).
+      apiBase: process.env.NUXT_PUBLIC_API_BASE ?? '',
     },
   },
 })
