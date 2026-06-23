@@ -44,7 +44,7 @@ jobs:
           {
             "AWSEBDockerrunVersion": "1",
             "Image": {
-              "Name": "${{ secrets.DOCKER_USERNAME }}/loteria-client:${{ github.sha }}",
+              "Name": "${{ secrets.DOCKER_USERNAME }}/loteria-service:${{ github.sha }}",
               "Update": "true"
             },
             "Ports": [
