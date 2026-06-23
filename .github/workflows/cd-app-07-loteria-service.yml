@@ -3,6 +3,8 @@ name: Deploy service API to Elastic Beanstalk
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'service/**'
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
