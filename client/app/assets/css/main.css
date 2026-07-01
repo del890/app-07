@@ -1,67 +1,173 @@
-:root {
-  /* ── Palette ──────────────────────────────────────────────────────────────
-     Deep Forest Green  #1B3022  → 140 28% 15%   primary text / shapes
-     Muted Sage         #8A9A8B  → 124  7% 57%   borders / soft accents
-     Velvet Charcoal    #262626  → 0    0% 15%   deep shadow surfaces
-     Warm Cream         #F5F5F0  → 60  20% 95%   main background
-     Champagne Gold     #C5A059  → 39  48% 56%   buttons / active states
-  ─────────────────────────────────────────────────────────────────────────── */
+/* ==========================================================================
+   App-level layout & utility helpers.
 
-  /* Backgrounds & text */
-  --background: 60 20% 95%;         /* Warm Cream #F5F5F0 */
-  --foreground: 140 28% 15%;        /* Deep Forest Green #1B3022 */
+   Tailwind has been removed — the app is now built entirely on the Sorte UI
+   design system (see app/sorte-ui). This file provides a *small* vocabulary of
+   layout/typography utilities, all expressed in Sorte UI design tokens, plus a
+   handful of app-specific patterns (number grids, data tables, meters).
+   ========================================================================== */
 
-  /* Card — pure white lifts off the cream background */
-  --card: 0 0% 100%;
-  --card-foreground: 140 28% 15%;
+@layer utilities {
+  /* ── Page frame ─────────────────────────────────────────────────────── */
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100vh;
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
 
-  /* Primary — Champagne Gold #C5A059 */
-  --primary: 39 48% 56%;
-  --primary-foreground: 140 28% 15%; /* Forest green text on gold */
+  .container {
+    inline-size: 100%;
+    max-inline-size: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-4);
+  }
+  .container--narrow { max-inline-size: 720px; }
+  .container--reading { max-inline-size: 900px; }
 
-  /* Secondary — light sage tint */
-  --secondary: 124 7% 88%;
-  --secondary-foreground: 140 28% 15%;
+  /* ── Stacks & rows ──────────────────────────────────────────────────── */
+  .stack { display: flex; flex-direction: column; gap: var(--space-5); }
+  .stack--xs { gap: var(--space-2); }
+  .stack--sm { gap: var(--space-3); }
+  .stack--lg { gap: var(--space-6); }
 
-  /* Muted */
-  --muted: 60 12% 93%;              /* warm-tinted near-cream */
-  --muted-foreground: 140 12% 42%; /* readable muted forest-green */
+  .row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+  .row--tight { gap: var(--space-2); }
+  .row--top { align-items: flex-start; }
+  .row--end { justify-content: flex-end; }
+  .row-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
 
-  /* Accent — very light sage */
-  --accent: 124 7% 92%;
-  --accent-foreground: 140 28% 15%;
+  .grid { display: grid; gap: var(--space-4); }
+  .grid--cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+  .grid--2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
 
-  /* Destructive / low-confidence */
-  --destructive: 0 72% 51%;
-  --destructive-foreground: 0 0% 98%;
+  .spacer { flex: 1; }
+  .full { inline-size: 100%; }
 
-  /* Success / high-confidence — Emerald */
-  --success: 165 100% 39%;
-  --success-foreground: 0 0% 100%;
+  /* ── Typography helpers (complement SHeading / SText) ───────────────── */
+  .muted { color: var(--color-text-muted); }
+  .subtle { color: var(--color-text-subtle); }
+  .brand { color: var(--color-primary); }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xs);
+    color: var(--color-primary);
+    font-family: var(--font-display);
+  }
+  .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .nums { font-variant-numeric: tabular-nums; }
 
-  /* Warning / medium-confidence — Amber */
-  --warning: 38 90% 48%;
-  --warning-foreground: 140 28% 15%; /* forest green on amber */
+  /* ── Number balls (compact, non-interactive) ───────────────────────── */
+  .balls { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .ball {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    aspect-ratio: 1;
+    border-radius: var(--radius-circle);
+    background: var(--color-primary);
+    color: var(--color-primary-contrast);
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    box-shadow: var(--shadow-xs);
+  }
+  .ball--sm { inline-size: 2rem; font-size: var(--font-size-xs); }
+  .ball--soft { background: var(--color-primary-soft); color: var(--color-primary-stronger); }
 
-  /* Borders & inputs — Muted Sage tone */
-  --border: 124 8% 78%;
-  --input: 124 8% 78%;
-  --ring: 39 48% 56%;               /* Champagne Gold focus ring */
+  /* ── Number picker grid (interactive) ──────────────────────────────── */
+  .pick-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-2); }
+  .pick {
+    display: grid;
+    place-items: center;
+    min-block-size: 2.75rem;
+    inline-size: 100%;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    transition:
+      background var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out),
+      transform var(--dur-fast) var(--ease-spring);
+  }
+  .pick:hover:not(:disabled) { border-color: var(--color-primary); transform: translateY(-1px); }
+  .pick:disabled { opacity: 0.45; cursor: not-allowed; }
+  .pick.is-on {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-primary-contrast);
+    box-shadow: var(--shadow-sm);
+  }
+  .pick:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
 
-  /* Subtle panel dividers — forest-green tinted */
-  --rule: rgba(27, 48, 34, 0.12);
-  --rule-2: rgba(27, 48, 34, 0.25);
+  /* ── Data tables ───────────────────────────────────────────────────── */
+  .table-wrap {
+    overflow-x: auto;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+  .table { inline-size: 100%; border-collapse: collapse; font-size: var(--font-size-sm); }
+  .table thead th {
+    text-align: start;
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-text-muted);
+    background: var(--color-surface-sunken);
+    padding: var(--space-3) var(--space-4);
+  }
+  .table tbody td { padding: var(--space-3) var(--space-4); border-block-start: 1px solid var(--color-border-subtle); }
+  .table tbody tr:hover td { background: var(--color-primary-softer); }
+  .table .num { text-align: end; font-variant-numeric: tabular-nums; }
 
-  /* UI-chrome monospace */
-  --mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* ── Meter / progress bar ──────────────────────────────────────────── */
+  .meter { block-size: 0.5rem; background: var(--color-surface-sunken); border-radius: var(--radius-pill); overflow: hidden; }
+  .meter__fill { block-size: 100%; border-radius: inherit; background: var(--color-primary); transition: inline-size var(--dur-slow) var(--ease-out); }
+  .meter__fill--success { background: var(--color-success); }
+  .meter__fill--warning { background: var(--color-warning); }
+  .meter__fill--danger { background: var(--color-danger); }
 
-  /* Shape */
-  --radius: 0.5rem;
+  /* ── Callout banners ───────────────────────────────────────────────── */
+  .callout {
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-surface);
+  }
+  .callout--success { background: var(--color-success-soft); border-color: color-mix(in oklab, var(--color-success) 30%, white); }
+  .callout--warning { background: var(--color-warning-soft); border-color: color-mix(in oklab, var(--color-warning) 30%, white); }
+  .callout--danger { background: var(--color-danger-soft); border-color: color-mix(in oklab, var(--color-danger) 30%, white); }
+  .callout--brand { background: var(--color-primary-softer); border-color: var(--color-primary-soft); }
 
-  /* Named palette tokens for direct use */
-  --forest-green: #1B3022;
-  --muted-sage: #8A9A8B;
-  --velvet-charcoal: #262626;
-  --warm-cream: #F5F5F0;
-  --champagne-gold: #C5A059;
+  /* ── Spinner ───────────────────────────────────────────────────────── */
+  .spinner {
+    inline-size: 1.15em;
+    block-size: 1.15em;
+    border: 2px solid currentColor;
+    border-block-start-color: transparent;
+    border-radius: var(--radius-circle);
+    animation: app-spin 0.6s linear infinite;
+  }
+  @keyframes app-spin { to { transform: rotate(360deg); } }
+
+  /* ── Misc ──────────────────────────────────────────────────────────── */
+  .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .text-center { text-align: center; }
+  .text-end { text-align: end; }
 }

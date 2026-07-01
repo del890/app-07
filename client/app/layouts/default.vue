@@ -1,138 +1,175 @@
 <script setup lang="ts">
-import { useActiveGame } from '~/composables/useActiveGame'
+import { useActiveGame, type ActiveGame } from '~/composables/useActiveGame'
 
 const route = useRoute()
-const router = useRouter()
 const { activeGame, setActiveGame } = useActiveGame()
 
-const mode = computed<'play' | 'home'>(() => {
-  if (route.path.startsWith('/play')) return 'play'
-  return 'home'
+// Drive the whole UI's colour scheme from the active game via Sorte UI's
+// `data-theme` system: lotofácil → violet, mega-sena → green.
+watchEffect(() => {
+  if (import.meta.client) {
+    document.documentElement.setAttribute('data-theme', activeGame.value)
+  }
 })
 
-function switchGame(game: 'lotofacil' | 'megasena') {
+const isHome = computed(() => route.path === '/')
+const isDashboard = computed(() => route.path.startsWith('/dashboard'))
+
+// Switching the game just re-skins in place — no navigation.
+function switchGame(game: ActiveGame) {
   setActiveGame(game)
-  router.push('/')
 }
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-background text-foreground">
-    <!-- Header -->
-    <header class="sticky top-0 z-50 bg-background border-b border-border">
-      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <NuxtLink
-          to="/"
-          class="text-sm font-medium tracking-widest uppercase hover:opacity-60 transition-opacity"
-          style="font-family: var(--mono);"
-        >
-          Loto <span class="opacity-40 normal-case tracking-normal text-xs font-normal">fezinha!</span>
+  <div class="app-shell">
+    <SAppHeader sticky>
+      <template #brand>
+        <NuxtLink to="/" class="brand">
+          <SLotteryBall :number="activeGame === 'megasena' ? 6 : 15" size="sm" />
+          <span class="brand__word">Fezinha</span>
         </NuxtLink>
+      </template>
 
-        <!-- Desktop nav — hidden on mobile -->
-        <nav class="hidden sm:flex items-center gap-1">
-          <!-- Lotofácil game tab -->
-          <button
-            type="button"
-            class="px-4 py-1.5 rounded-full border text-[11px] font-medium uppercase tracking-wider transition-all"
-            :class="mode === 'home' && activeGame === 'lotofacil'
-              ? 'bg-foreground text-background border-foreground'
-              : 'bg-transparent text-foreground border-border hover:border-foreground/40'"
-            style="font-family: var(--mono);"
-            @click="switchGame('lotofacil')"
-          >
-            Lotofácil
-          </button>
-          <!-- Mega Sena game tab -->
-          <button
-            type="button"
-            class="px-4 py-1.5 rounded-full border text-[11px] font-medium uppercase tracking-wider transition-all"
-            :class="mode === 'home' && activeGame === 'megasena'
-              ? 'bg-foreground text-background border-foreground'
-              : 'bg-transparent text-foreground border-border hover:border-foreground/40'"
-            style="font-family: var(--mono);"
-            @click="switchGame('megasena')"
-          >
-            Mega Sena
-          </button>
-          <!-- Jogar route link -->
-          <NuxtLink
-            to="/play"
-            class="px-4 py-1.5 rounded-full border text-[11px] font-medium uppercase tracking-wider transition-all"
-            :class="mode === 'play'
-              ? 'bg-foreground text-background border-foreground'
-              : 'bg-transparent text-foreground border-border hover:border-foreground/40'"
-            style="font-family: var(--mono);"
-          >
-            Gerar jogos
-          </NuxtLink>
-        </nav>
-      </div>
-    </header>
+      <template #nav>
+        <NuxtLink to="/" class="nav-pill" :class="{ 'is-active': isHome }">Início</NuxtLink>
+        <NuxtLink to="/dashboard" class="nav-pill" :class="{ 'is-active': isDashboard }">Painel</NuxtLink>
+        <span class="nav-sep" aria-hidden="true" />
+        <button
+          type="button"
+          class="nav-pill"
+          :class="{ 'is-active': activeGame === 'lotofacil' }"
+          @click="switchGame('lotofacil')"
+        >
+          Lotofácil
+        </button>
+        <button
+          type="button"
+          class="nav-pill"
+          :class="{ 'is-active': activeGame === 'megasena' }"
+          @click="switchGame('megasena')"
+        >
+          Mega-Sena
+        </button>
+      </template>
+    </SAppHeader>
 
-    <!-- Main content — extra bottom padding on mobile to clear tab bar -->
-    <main class="flex-1 max-w-6xl mx-auto w-full px-3 sm:px-4 py-6 pb-20 sm:pb-6">
+    <main class="container app-main">
       <slot />
     </main>
 
-    <!-- Footer -->
-    <footer
-      class="py-3 text-center border-t border-border text-muted-foreground text-[10px] tracking-wider uppercase"
-      style="font-family: var(--mono);"
-    >
-      Ferramenta de Pesquisa Loterias — não é afiliada à Caixa Econômica Federal.
+    <footer class="app-footer">
+      <SText size="2xs" tone="muted" variant="eyebrow" as="span">
+        Loteca Premiada — não afiliada à Caixa Econômica Federal
+      </SText>
     </footer>
 
-    <!-- Mobile bottom tab bar — visible only on small screens -->
-    <nav
-      class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-background border-t border-border flex"
-      style="padding-bottom: env(safe-area-inset-bottom, 0px);"
-    >
-      <!-- Lotofácil tab -->
-      <button
-        type="button"
-        class="flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[56px] transition-colors border-t-2 text-[9px] uppercase tracking-wider font-medium"
-        :class="mode === 'home' && activeGame === 'lotofacil' ? 'text-foreground border-foreground' : 'text-muted-foreground border-transparent'"
-        style="font-family: var(--mono);"
-        @click="switchGame('lotofacil')"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M12 8v4l3 3" />
-        </svg>
+    <!-- Mobile bottom tab bar -->
+    <nav class="tabbar">
+      <NuxtLink to="/" class="tabbar__item" :class="{ 'is-active': isHome }">
+        <SIcon name="trophy" :size="20" />
+        Início
+      </NuxtLink>
+      <NuxtLink to="/dashboard" class="tabbar__item" :class="{ 'is-active': isDashboard }">
+        <SIcon name="sparkle" :size="20" />
+        Painel
+      </NuxtLink>
+      <button type="button" class="tabbar__item" :class="{ 'is-active': activeGame === 'lotofacil' }" @click="switchGame('lotofacil')">
+        <SIcon name="star" :size="20" />
         Lotofácil
       </button>
-      <!-- Mega Sena tab -->
-      <button
-        type="button"
-        class="flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[56px] transition-colors border-t-2 text-[9px] uppercase tracking-wider font-medium"
-        :class="mode === 'home' && activeGame === 'megasena' ? 'text-foreground border-foreground' : 'text-muted-foreground border-transparent'"
-        style="font-family: var(--mono);"
-        @click="switchGame('megasena')"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-          <rect x="2" y="7" width="20" height="14" rx="2" />
-          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-          <line x1="12" y1="12" x2="12" y2="16" />
-          <line x1="10" y1="14" x2="14" y2="14" />
-        </svg>
-        Mega Sena
+      <button type="button" class="tabbar__item" :class="{ 'is-active': activeGame === 'megasena' }" @click="switchGame('megasena')">
+        <SIcon name="ticket" :size="20" />
+        Mega-Sena
       </button>
-      <!-- Jogar tab -->
-      <NuxtLink
-        to="/play"
-        class="flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[56px] transition-colors border-t-2 text-[9px] uppercase tracking-wider font-medium"
-        :class="mode === 'play' ? 'text-foreground border-foreground' : 'text-muted-foreground border-transparent'"
-        style="font-family: var(--mono);"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5">
-          <rect x="2" y="3" width="20" height="14" rx="2" />
-          <path d="M8 21h8M12 17v4" />
-        </svg>
-        Jogar
-      </NuxtLink>
     </nav>
   </div>
 </template>
 
+<style scoped>
+.brand { display: inline-flex; align-items: center; gap: var(--space-2); text-decoration: none; }
+.brand__word {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-extrabold);
+  font-size: var(--font-size-xl);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text);
+}
 
+.nav-sep {
+  inline-size: 1.5px;
+  block-size: 1.5rem;
+  background: var(--color-border);
+  margin-inline: var(--space-1);
+}
+
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out);
+}
+.nav-pill:hover { border-color: var(--color-primary); text-decoration: none; }
+.nav-pill.is-active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.app-main {
+  flex: 1;
+  inline-size: 100%;
+  padding-block: var(--space-6);
+  padding-block-end: calc(var(--space-9) + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 721px) {
+  .app-main { padding-block-end: var(--space-6); }
+}
+
+.app-footer {
+  padding: var(--space-4);
+  text-align: center;
+  border-block-start: 1.5px solid var(--color-border-subtle);
+}
+
+/* Mobile bottom tab bar */
+.tabbar {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 50;
+  display: flex;
+  background: var(--color-surface);
+  border-block-start: 1.5px solid var(--color-border);
+  padding-block-end: env(safe-area-inset-bottom, 0px);
+}
+.tabbar__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-block-size: 56px;
+  border: 0;
+  border-block-start: 2px solid transparent;
+  background: transparent;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+.tabbar__item.is-active { color: var(--color-primary); border-block-start-color: var(--color-primary); }
+@media (min-width: 721px) {
+  .tabbar { display: none; }
+}
+</style>

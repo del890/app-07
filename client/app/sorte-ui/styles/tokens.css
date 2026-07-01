@@ -1,0 +1,230 @@
+/* ==========================================================================
+   Sorte UI — Design Tokens
+   Tier 1: literal primitives  ·  Tier 2: semantic  ·  Tier 3: theme (lottery)
+   Inspired by the Brazilian Caixa lotteries. Professional, but fun.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+@layer reset, base, theme, components, utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    /* ----------------------------------------------------------------------
+       TIER 1 — Primitive palette
+       Each Brazilian lottery contributes a brand hue. These are raw literals;
+       components never reference them directly — they go through Tier 2/3.
+       ---------------------------------------------------------------------- */
+
+    /* Brazilian lottery brand hues (base swatch of each game) */
+    --lot-megasena:   #00a868; /* Mega-Sena   — green   */
+    --lot-lotofacil:  #930089; /* Lotofácil   — magenta */
+    --lot-quina:      #3b1c8c; /* Quina       — indigo  */
+    --lot-lotomania:  #f78100; /* Lotomania   — orange  */
+    --lot-duplasena:  #c2173a; /* Dupla Sena  — red     */
+    --lot-timemania:  #6cbe45; /* Timemania   — lime    */
+    --lot-diadesorte: #cb8e1a; /* Dia de Sorte— gold    */
+    --lot-supersete:  #119e6c; /* Super Sete  — emerald */
+    --lot-milionaria: #2b2a6e; /* +Milionária — navy    */
+    --lot-federal:    #134e9c; /* Federal     — blue    */
+
+    /* Primary ramp — vivid violet (Lotofácil-leaning, the playful default) */
+    --violet-50:  #f6f1ff;
+    --violet-100: #ece0ff;
+    --violet-200: #d8c2ff;
+    --violet-300: #bd96ff;
+    --violet-400: #a166fb;
+    --violet-500: #8b3df5;
+    --violet-600: #7826e0;
+    --violet-700: #631dbb;
+    --violet-800: #511a96;
+    --violet-900: #3f1773;
+
+    /* Success / Mega-Sena green ramp (also the "go" / CTA colour) */
+    --green-50:  #e7f8f0;
+    --green-100: #c5edda;
+    --green-300: #5fcf9c;
+    --green-500: #12a85f;
+    --green-600: #0d8e4f;
+    --green-700: #0b7341;
+
+    /* Accent / Lotomania orange ramp */
+    --orange-50:  #fff3e6;
+    --orange-100: #ffe0bf;
+    --orange-400: #ff9d33;
+    --orange-500: #f78100;
+    --orange-600: #d96e00;
+
+    /* Feedback */
+    --red-50:   #fdecef;
+    --red-100:  #fbd0d8;
+    --red-500:  #e0234e;
+    --red-600:  #c2173a;
+    --amber-100:#fdf0c9;
+    --amber-400:#f5c026;
+    --amber-500:#e3a70b;
+    --blue-100: #d8e6ff;
+    --blue-500: #2f6df0;
+
+    /* Neutrals — warm-tinted ink so the system never feels clinical */
+    --neutral-0:   #ffffff;
+    --neutral-50:  #f7f7f9;
+    --neutral-100: #efeff3;
+    --neutral-150: #e6e6ec;
+    --neutral-200: #d9d9e1;
+    --neutral-300: #c2c2cd;
+    --neutral-400: #9a9aaa;
+    --neutral-500: #74748a;
+    --neutral-600: #54546a;
+    --neutral-700: #3b3b4d;
+    --neutral-800: #262633;
+    --neutral-900: #15131c;
+
+    /* ----------------------------------------------------------------------
+       TIER 1 — Typography primitives
+       ---------------------------------------------------------------------- */
+    --font-display: 'Poppins', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-body: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-mono: ui-monospace, 'SFMono-Regular', 'Menlo', monospace;
+
+    --font-size-2xs: 0.6875rem; /* 11 */
+    --font-size-xs:  0.75rem;   /* 12 */
+    --font-size-sm:  0.875rem;  /* 14 */
+    --font-size-md:  1rem;      /* 16 */
+    --font-size-lg:  1.125rem;  /* 18 */
+    --font-size-xl:  1.375rem;  /* 22 */
+    --font-size-2xl: 1.75rem;   /* 28 */
+    --font-size-3xl: 2.25rem;   /* 36 */
+    --font-size-4xl: 3rem;      /* 48 */
+
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+
+    --line-tight: 1.1;
+    --line-snug: 1.25;
+    --line-normal: 1.5;
+    --line-relaxed: 1.65;
+
+    --tracking-tight: -0.02em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.04em;
+    --tracking-caps: 0.08em;
+
+    /* ----------------------------------------------------------------------
+       TIER 1 — Space, radius, shadow, motion
+       ---------------------------------------------------------------------- */
+    --space-0: 0;
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 2.5rem;
+    --space-8: 3rem;
+    --space-9: 4rem;
+
+    --radius-xs: 6px;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+    --radius-pill: 999px;
+    --radius-circle: 50%;
+
+    /* Soft, slightly violet-tinted depth — friendly, not heavy */
+    --shadow-xs: 0 1px 2px rgba(21, 19, 28, 0.06);
+    --shadow-sm: 0 2px 6px rgba(21, 19, 28, 0.08);
+    --shadow-md: 0 8px 20px rgba(21, 19, 28, 0.10);
+    --shadow-lg: 0 18px 40px rgba(21, 19, 28, 0.14);
+    --shadow-focus: 0 0 0 4px var(--color-primary-soft);
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --dur-fast: 120ms;
+    --dur-base: 200ms;
+    --dur-slow: 320ms;
+
+    --container-max: 1200px;
+
+    /* ----------------------------------------------------------------------
+       TIER 2 — Semantic tokens (what components actually consume)
+       ---------------------------------------------------------------------- */
+    --color-bg: var(--neutral-50);
+    --color-surface: var(--neutral-0);
+    --color-surface-sunken: var(--neutral-100);
+    --color-surface-hover: var(--neutral-50);
+    --color-overlay: rgba(21, 19, 28, 0.45);
+
+    --color-text: var(--neutral-900);
+    --color-text-muted: var(--neutral-500);
+    --color-text-subtle: var(--neutral-400);
+    --color-text-on-brand: var(--neutral-0);
+    --color-text-link: var(--color-primary);
+
+    --color-border: var(--neutral-200);
+    --color-border-strong: var(--neutral-300);
+    --color-border-subtle: var(--neutral-150);
+
+    --color-success: var(--green-500);
+    --color-success-soft: var(--green-100);
+    --color-warning: var(--amber-500);
+    --color-warning-soft: var(--amber-100);
+    --color-danger: var(--red-500);
+    --color-danger-soft: var(--red-100);
+    --color-info: var(--blue-500);
+    --color-info-soft: var(--blue-100);
+
+    --color-accent: var(--orange-500);
+    --color-accent-strong: var(--orange-600);
+    --color-accent-soft: var(--orange-100);
+
+    /* These three are overridden per lottery theme in @layer theme below.
+       The default (no data-theme) is Lotofácil-leaning violet. */
+    --color-primary: var(--violet-500);
+    --color-primary-strong: var(--violet-600);
+    --color-primary-stronger: var(--violet-700);
+    --color-primary-soft: var(--violet-100);
+    --color-primary-softer: var(--violet-50);
+    --color-primary-contrast: var(--neutral-0);
+  }
+}
+
+/* ==========================================================================
+   TIER 3 — Lottery themes
+   Apply with `data-theme="megasena"` on <html>, a section, or any wrapper.
+   Each theme only needs to restate the primary family; everything else
+   (buttons, links, focus rings, badges…) re-derives via color-mix().
+   @scope keeps the nearest theme wrapper winning, so themes can nest.
+   ========================================================================== */
+@layer theme {
+  :where([data-theme]) {
+    --color-primary-strong: color-mix(in oklab, var(--color-primary) 86%, black);
+    --color-primary-stronger: color-mix(in oklab, var(--color-primary) 72%, black);
+    --color-primary-soft: color-mix(in oklab, var(--color-primary) 16%, white);
+    --color-primary-softer: color-mix(in oklab, var(--color-primary) 7%, white);
+    --color-text-link: var(--color-primary);
+  }
+
+  [data-theme='lotofacil']  { --color-primary: var(--violet-500); }
+  [data-theme='megasena']   { --color-primary: var(--lot-megasena); }
+  [data-theme='quina']      { --color-primary: var(--lot-quina); }
+  [data-theme='lotomania']  { --color-primary: var(--lot-lotomania); }
+  [data-theme='duplasena']  { --color-primary: var(--lot-duplasena); }
+  [data-theme='timemania']  { --color-primary: var(--lot-timemania); }
+  [data-theme='diadesorte'] { --color-primary: var(--lot-diadesorte); }
+  [data-theme='supersete']  { --color-primary: var(--lot-supersete); }
+  [data-theme='milionaria'] { --color-primary: var(--lot-milionaria); }
+  [data-theme='federal']    { --color-primary: var(--lot-federal); }
+
+  /* A few lottery hues are bright enough to need dark text on solid fills */
+  [data-theme='timemania'],
+  [data-theme='diadesorte'] {
+    --color-primary-contrast: var(--neutral-900);
+  }
+}

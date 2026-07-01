@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { Button } from '~/components/ui/button'
-import { Badge } from '~/components/ui/badge'
-import { Card, CardContent, CardHeader } from '~/components/ui/card'
 import type { DrawPremio } from '~/types/api'
 import { useActiveGame } from '~/composables/useActiveGame'
 
@@ -18,6 +15,7 @@ const retry = computed(() => activeGame.value === 'megasena' ? msRetry : lfRetry
 
 const badgeCount = computed(() => activeGame.value === 'megasena' ? 6 : 15)
 const topPrizeLabel = computed(() => activeGame.value === 'megasena' ? '6 acertos' : '15 acertos')
+const gameLabel = computed(() => activeGame.value === 'megasena' ? 'Mega-Sena' : 'Lotofácil')
 
 function topPrize(premiacoes: DrawPremio[]): DrawPremio | undefined {
   return premiacoes.find(p => p.faixa === 1)
@@ -29,78 +27,80 @@ function formatCurrency(value: number): string {
 </script>
 
 <template>
-  <div class="max-w-2xl sm:max-w-3xl mx-auto py-6 sm:py-10 space-y-8 px-0">
+  <div class="container container--reading stack--lg stack">
     <!-- Header -->
-    <div class="text-center space-y-2">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-semibold tracking-wide uppercase">
-        {{ activeGame === 'megasena' ? 'Mega Sena' : 'Lotofácil' }} · Últimos Sorteios
-      </div>
-      <h1 class="text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-[hsl(165,100%,39%)] bg-clip-text text-transparent">
-        Resultados Recentes
-      </h1>
+    <div class="stack--xs stack text-center">
+      <SText variant="eyebrow" align="center">{{ gameLabel }} · Últimos Sorteios</SText>
+      <SHeading :level="1" size="3xl" align="center">Resultados Recentes</SHeading>
     </div>
 
     <!-- Loading skeletons -->
-    <div v-if="pending" class="space-y-4">
-      <Card v-for="n in 3" :key="n" class="animate-pulse">
-        <CardHeader class="pb-3">
-          <div class="h-5 w-32 rounded bg-muted" />
-        </CardHeader>
-        <CardContent class="space-y-3">
-          <div class="flex flex-wrap gap-2">
-            <div v-for="i in badgeCount" :key="i" class="w-10 h-10 rounded-full bg-muted" />
-          </div>
-          <div class="h-4 w-48 rounded bg-muted" />
-        </CardContent>
-      </Card>
+    <div v-if="pending" class="stack">
+      <SCard v-for="n in 3" :key="n" variant="outlined" padding="md">
+        <div class="skeleton skeleton--title" />
+        <div class="balls" style="margin-block-start: var(--space-3);">
+          <div v-for="i in badgeCount" :key="i" class="skeleton skeleton--ball" />
+        </div>
+      </SCard>
     </div>
 
     <!-- Error state -->
-    <div v-else-if="error" class="text-center space-y-4 py-8">
-      <p class="text-destructive font-medium">Não foi possível carregar os sorteios.</p>
-      <p class="text-muted-foreground text-sm">{{ error.message }}</p>
-      <Button variant="outline" @click="retry()">Tentar novamente</Button>
+    <div v-else-if="error" class="stack text-center" style="padding-block: var(--space-6);">
+      <SText tone="danger" weight="medium">Não foi possível carregar os sorteios.</SText>
+      <SText size="sm" tone="muted">{{ error.message }}</SText>
+      <div class="row" style="justify-content: center;">
+        <SButton variant="outline" @click="retry()">Tentar novamente</SButton>
+      </div>
     </div>
 
     <!-- Draw cards -->
-    <div v-else class="space-y-4">
-      <Card v-for="draw in draws" :key="draw.concurso">
-        <CardHeader class="pb-3">
-          <div class="flex items-center justify-between flex-wrap gap-2">
-            <div class="flex items-center gap-2">
-              <span class="font-semibold text-base">Concurso {{ draw.concurso }}</span>
-              <span class="text-muted-foreground text-sm">{{ draw.data }}</span>
+    <div v-else class="stack">
+      <SCard v-for="draw in draws" :key="draw.concurso" variant="outlined" padding="lg">
+        <template #header>
+          <div class="row-between">
+            <div class="row row--tight">
+              <SHeading :level="2" size="xl">Concurso {{ draw.concurso }}</SHeading>
+              <SText size="sm" tone="muted" as="span">{{ draw.data }}</SText>
             </div>
-            <Badge v-if="draw.acumulou" variant="destructive" class="text-xs">
-              Acumulou
-            </Badge>
+            <SBadge v-if="draw.acumulou" variant="danger" tone="soft">Acumulou</SBadge>
           </div>
-        </CardHeader>
-        <CardContent class="space-y-4">
-          <!-- Number badges -->
-          <div class="flex flex-wrap gap-2">
-            <span
+        </template>
+
+        <div class="stack--sm stack">
+          <!-- Number balls -->
+          <div class="balls">
+            <SLotteryBall
               v-for="num in draw.dezenas"
               :key="num"
-              class="w-10 h-10 flex items-center justify-center rounded-full font-bold text-sm bg-primary text-primary-foreground"
-            >
-              {{ parseInt(num) }}
-            </span>
+              :number="parseInt(num)"
+              size="sm"
+            />
           </div>
           <!-- Top prize info -->
-          <div v-if="topPrize(draw.premiacoes)" class="text-sm text-muted-foreground flex items-center gap-2">
-            <span>{{ topPrizeLabel }}:</span>
-            <span class="font-medium text-foreground">
+          <div v-if="topPrize(draw.premiacoes)" class="row row--tight">
+            <SText size="sm" tone="muted" as="span">{{ topPrizeLabel }}:</SText>
+            <SText size="sm" weight="medium" as="span">
               {{ topPrize(draw.premiacoes)!.ganhadores }}
               {{ topPrize(draw.premiacoes)!.ganhadores === 1 ? 'ganhador' : 'ganhadores' }}
-            </span>
-            <span v-if="topPrize(draw.premiacoes)!.ganhadores > 0" class="text-primary font-semibold">
+            </SText>
+            <SText v-if="topPrize(draw.premiacoes)!.ganhadores > 0" size="sm" weight="semibold" tone="brand" as="span">
               {{ formatCurrency(topPrize(draw.premiacoes)!.valorPremio) }}
-            </span>
+            </SText>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </SCard>
     </div>
   </div>
 </template>
 
+<style scoped>
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface-sunken), var(--color-border-subtle), var(--color-surface-sunken));
+  background-size: 200% 100%;
+  border-radius: var(--radius-sm);
+  animation: skeleton-pulse 1.3s ease-in-out infinite;
+}
+.skeleton--title { block-size: 1.25rem; inline-size: 8rem; }
+.skeleton--ball { inline-size: 2rem; block-size: 2rem; border-radius: var(--radius-circle); }
+@keyframes skeleton-pulse { to { background-position: -200% 0; } }
+</style>

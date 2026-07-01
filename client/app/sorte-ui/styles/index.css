@@ -1,0 +1,3 @@
+/* Single entry point — import this once in your Nuxt app (or main.ts). */
+@import './tokens.css';
+@import './global.css';
